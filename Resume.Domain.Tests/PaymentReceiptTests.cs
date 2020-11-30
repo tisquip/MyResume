@@ -8,7 +8,7 @@ namespace Resume.Domain.Tests
         
         [Theory]
         [InlineData(false, true)]
-        [InlineData(true, true)]
+        [InlineData(true, true)] 
         public void SetNotificationWasSentTest_AssesReturnedResult(bool notificationWasSet, bool expectedResultSucceeded)
         {
             //Arrange
@@ -23,7 +23,7 @@ namespace Resume.Domain.Tests
         }
 
         [Theory]
-        [InlineData(false, false)]
+        [InlineData(false, true)] // <-- Leaving one failing test just for demo purposes 
         [InlineData(true, true)]
         public void SetNotificationWasSentTest_AssessPropertyHasChanged(bool notificationWasSet, bool expectedNotificationPropertyValue)
         {
