@@ -13,5 +13,11 @@ namespace Resume.Persistence.Data
         {
             base.OnConfiguring(optionsBuilder);
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<PaymentReceipt>().OwnsOne(p => p.Amount);
+        }
     }
 }
