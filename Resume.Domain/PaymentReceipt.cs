@@ -2,8 +2,6 @@
 using Resume.Domain.Response;
 using Resume.Domain.ValueObjects;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Resume.Domain
 {

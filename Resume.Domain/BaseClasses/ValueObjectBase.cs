@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Resume.Domain.BaseClasses
+﻿namespace Resume.Domain.BaseClasses
 {
     public abstract class ValueObjectBase<T>
         where T : ValueObjectBase<T>

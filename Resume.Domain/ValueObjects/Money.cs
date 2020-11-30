@@ -1,7 +1,5 @@
 ﻿using Resume.Domain.BaseClasses;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Resume.Domain.ValueObjects
 {

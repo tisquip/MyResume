@@ -1,7 +1,5 @@
 ﻿using Resume.Domain.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Resume.Domain.BaseClasses
 {
@@ -16,9 +14,9 @@ namespace Resume.Domain.BaseClasses
 
         public bool Equals(EntityBase other)
         {
-            return other is object 
+            return other is object
                     && GetType().Equals(other.GetType())
-                    && Id != default 
+                    && Id != default
                     && Id == other.Id;
         }
 
