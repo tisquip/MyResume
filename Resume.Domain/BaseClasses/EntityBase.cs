@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Resume.Domain.BaseClasses
 {
-    public class EntityBase : IEntity, IEquatable<EntityBase>
+    public abstract class EntityBase : IEntity, IEquatable<EntityBase>
     {
         public int Id { get; private set; }
 
@@ -18,6 +18,7 @@ namespace Resume.Domain.BaseClasses
         {
             return other is object 
                     && GetType().Equals(other.GetType())
+                    && Id != default 
                     && Id == other.Id;
         }
 

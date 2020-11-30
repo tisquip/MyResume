@@ -1,6 +1,6 @@
 ﻿namespace Resume.Domain.BaseClasses
 {
-    public class RootAggregateBase : EntityBase
+    public abstract class RootAggregateBase : EntityBase
     {
     }
 }
