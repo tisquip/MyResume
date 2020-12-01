@@ -5,7 +5,8 @@ namespace Resume.Domain.Response
 {
     public class Result
     {
-        public static string GeneralErrorMessage => "An unexpected error occurred";
+        public static string GeneralErrorMessage => "An unexpected error occurred.";
+        public static string GeneralErrorMessageArgumentInvaild => "A supplied argument was invalid.";
         public bool Succeeded { get; set; }
         public List<string> Messages { get; set; } = new List<string>();
 
@@ -19,6 +20,17 @@ namespace Resume.Domain.Response
             Succeeded = false;
         }
 
+        public void SetError(string errorMessage) => SetError(errorMessage.ToListOfSelf());
+        public void SetErrorInvalidArguments(params string[] argumentNames)
+        {
+            string errorDescription = GeneralErrorMessageArgumentInvaild;
+            if (argumentNames?.Any() ?? false)
+            {
+                errorDescription += $" Invalid arguments were: {string.Join(", ", argumentNames)}";
+            }
+            SetError(errorDescription);
+        }
+
         public void SetSuccess(List<string> noticeMessages = null)
         {
             Messages = noticeMessages ?? new List<string>();
@@ -30,6 +42,13 @@ namespace Resume.Domain.Response
         {
             var result = new Result();
             result.SetError(errorMessages);
+            return result;
+        }
+
+        public static Result ErrorInvalidArguments(params string[] argumentNames)
+        {
+            var result = new Result();
+            result.SetErrorInvalidArguments(argumentNames);
             return result;
         }
 

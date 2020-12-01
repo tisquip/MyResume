@@ -20,6 +20,7 @@ namespace Resume.Domain
         public string SportDataAwayTeamLogoUrl { get; set; }
         public string SportDataVenueName { get; set; }
         public string SportDataVenueCity { get; set; }
+        public LiveMatchStats FullTimeMatchStats { get; set; }
 
         public FootBallMatch()
         {

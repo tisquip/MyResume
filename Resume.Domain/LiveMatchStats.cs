@@ -10,7 +10,8 @@ namespace Resume.Domain
     public class LiveMatchStats
     {
         public int SportDataMatchId { get; set; }
-        public string Score { get; set; }
+        public int GoalsScoredHomeSide { get; set; }
+        public int GoalsScoredAwaySide { get; set; }
         public int RedCardsHome { get; set; }
         public int RedCardsAway { get; set; }
         public MatchStatus MatchStatus { get; set; }
@@ -19,10 +20,11 @@ namespace Resume.Domain
         {
         }
 
-        public LiveMatchStats(int sportDataMatchId, string score, int redCardsHome, int redCardsAway, MatchStatus matchStatus)
+        public LiveMatchStats(int sportDataMatchId, int goalsScoredHomeSide, int goalsScoredAwaySide, int redCardsHome, int redCardsAway, MatchStatus matchStatus)
         {
             SportDataMatchId = sportDataMatchId;
-            Score = score;
+            GoalsScoredHomeSide = goalsScoredHomeSide;
+            GoalsScoredAwaySide = goalsScoredAwaySide;
             RedCardsHome = redCardsHome;
             RedCardsAway = redCardsAway;
             MatchStatus = matchStatus;
