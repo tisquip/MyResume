@@ -26,6 +26,7 @@ namespace Resume.Domain
             SportDataTeamId = sportDataTeamId;
             SportDataLogoUrl = sportDataLogoUrl ?? throw new ArgumentNullException(nameof(sportDataLogoUrl));
             LastCheckedFromApi = lastCheckedFromApi;
+            JSListOfFootBallMatch_Matches = 
         }
 
         public override string ToString()
