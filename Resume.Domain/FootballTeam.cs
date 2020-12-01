@@ -1,5 +1,6 @@
 ﻿using Resume.Domain.BaseClasses;
 using Resume.Domain.Interfaces;
+using Resume.Domain.Interfaces.RepoInterfaces;
 using Resume.Domain.Response;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace Resume.Domain
             JSListOfFootBallMatch_Matches = footBallMatches?.SerializeToJson() ?? "[]";
         }
 
-        public async Task<Result> AddFullTimeLiveMatchStats(IExceptionNotifier exceptionNotifier, LiveMatchStats fullTimeLiveMatchStats)
+        public async Task<Result> AddFullTimeLiveMatchStats(IExceptionNotifier exceptionNotifier, IRootAggregateRepository<FootballTeam> rootAggregateRepositoryFootballTeam, LiveMatchStats fullTimeLiveMatchStats)
         {
             Result vtr = new Result();
             try
@@ -60,7 +61,7 @@ namespace Resume.Domain
                         {
                             matchToSet.FullTimeMatchStats = fullTimeLiveMatchStats;
                             JSListOfFootBallMatch_Matches = matches.SerializeToJson();
-                            vtr.SetSuccess();
+                            vtr = await rootAggregateRepositoryFootballTeam.Update(this);
                         }
                     }
                 }
