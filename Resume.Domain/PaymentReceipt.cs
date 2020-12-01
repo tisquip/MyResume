@@ -5,6 +5,9 @@ using System;
 
 namespace Resume.Domain
 {
+    /// <summary>
+    /// This is the only Domain class that tries to adhere to DDD principals, all other domain classes were produced fast because this is only a sample project and to invest time on the other classes is costly - also remember that when prototypes are needed fast, development has to be fast, then it can always be refactored later on.
+    /// </summary>
     public class PaymentReceipt : RootAggregateBase
     {
         public DateTime Created { get; private set; } = DateTime.UtcNow;
