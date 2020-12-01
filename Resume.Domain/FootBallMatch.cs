@@ -9,35 +9,35 @@ namespace Resume.Domain
     /// </summary>
     public class FootBallMatch
     {
-        public string SignalRBroadcastId => SportDataMatchId.ToString();
-        public int SportDataMatchId { get; set; }
+        public string SignalRBroadcastId => MatchId.ToString();
+        public string MatchId { get; set; }
         public DateTime TimeOfMatch { get; set; }
-        public string SportDataHomeTeamName { get; set; }
-        public int SportDataHomeTeamId { get; set; }
-        public string SportDataHomeTeamLogoUrl { get; set; }
-        public string SportDataAwayTeamName { get; set; }
-        public int SportDataAwayTeamId { get; set; }
-        public string SportDataAwayTeamLogoUrl { get; set; }
-        public string SportDataVenueName { get; set; }
-        public string SportDataVenueCity { get; set; }
+        public string HomeTeamName { get; set; }
+        public string HomeTeamId { get; set; }
+        public string HomeTeamLogoUrl { get; set; }
+        public string AwayTeamName { get; set; }
+        public string AwayTeamId { get; set; }
+        public string AwayTeamLogoUrl { get; set; }
+        public string VenueName { get; set; }
+        public string VenueCity { get; set; }
         public LiveMatchStats FullTimeMatchStats { get; set; }
 
         public FootBallMatch()
         {
         }
 
-        public FootBallMatch(int sportDataMatchId, DateTime timeOfMatch, string sportDataHomeTeamName, int sportDataHomeTeamId, string sportDataHomeTeamLogoUrl, string sportDataAwayTeamName, int sportDataAwayTeamId, string sportDataAwayTeamLogoUrl, string sportDataVenueName, string sportDataVenueCity)
+        public FootBallMatch(string matchId, DateTime timeOfMatch, string homeTeamName, string homeTeamId, string homeTeamLogoUrl, string awayTeamName, string awayTeamId, string awayTeamLogoUrl, string venueName, string venueCity)
         {
-            SportDataMatchId = sportDataMatchId;
+            MatchId = matchId;
             TimeOfMatch = timeOfMatch;
-            SportDataHomeTeamName = sportDataHomeTeamName;
-            SportDataHomeTeamId = sportDataHomeTeamId;
-            SportDataHomeTeamLogoUrl = sportDataHomeTeamLogoUrl;
-            SportDataAwayTeamName = sportDataAwayTeamName;
-            SportDataAwayTeamId = sportDataAwayTeamId;
-            SportDataAwayTeamLogoUrl = sportDataAwayTeamLogoUrl;
-            SportDataVenueName = sportDataVenueName;
-            SportDataVenueCity = sportDataVenueCity;
+            HomeTeamName = homeTeamName;
+            HomeTeamId = homeTeamId;
+            HomeTeamLogoUrl = homeTeamLogoUrl;
+            AwayTeamName = awayTeamName;
+            AwayTeamId = awayTeamId;
+            AwayTeamLogoUrl = awayTeamLogoUrl;
+            VenueName = venueName;
+            VenueCity = venueCity;
         }
     }
 }

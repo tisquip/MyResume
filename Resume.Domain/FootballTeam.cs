@@ -16,8 +16,8 @@ namespace Resume.Domain
     public class FootballTeam : RootAggregateBase
     {
         public string Name { get; private set; }
-        public int SportDataTeamId { get; private set; }
-        public string SportDataLogoUrl { get; private set; }
+        public string TeamId { get; private set; }
+        public string LogoUrl { get; private set; }
         public DateTime LastCheckedFromApi { get; set; }
         public string JSListOfFootBallMatch_Matches { get; set; } = "[]";
 
@@ -25,11 +25,11 @@ namespace Resume.Domain
         {
         }
 
-        public FootballTeam(string name, int sportDataTeamId, string sportDataLogoUrl, DateTime lastCheckedFromApi, List<FootBallMatch> footBallMatches)
+        public FootballTeam(string name, string teamId, string logoUrl, DateTime lastCheckedFromApi, List<FootBallMatch> footBallMatches)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            SportDataTeamId = sportDataTeamId;
-            SportDataLogoUrl = sportDataLogoUrl ?? throw new ArgumentNullException(nameof(sportDataLogoUrl));
+            TeamId = teamId;
+            LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl));
             LastCheckedFromApi = lastCheckedFromApi;
             JSListOfFootBallMatch_Matches = footBallMatches?.SerializeToJson() ?? "[]";
         }
@@ -39,7 +39,7 @@ namespace Resume.Domain
             Result vtr = new Result();
             try
             {
-                if (fullTimeLiveMatchStats == null || fullTimeLiveMatchStats.SportDataMatchId <= 0)
+                if (fullTimeLiveMatchStats == null || String.IsNullOrWhiteSpace(fullTimeLiveMatchStats.MatchId))
                 {
                     vtr.SetErrorInvalidArguments(nameof(fullTimeLiveMatchStats));
                 }
@@ -52,10 +52,10 @@ namespace Resume.Domain
                     else
                     {
                         List<FootBallMatch> matches = JSListOfFootBallMatch_Matches.DeserializeFromJson<List<FootBallMatch>>();
-                        FootBallMatch matchToSet = matches.FirstOrDefault(m => m.SportDataMatchId == fullTimeLiveMatchStats.SportDataMatchId);
+                        FootBallMatch matchToSet = matches.FirstOrDefault(m => m.MatchId == fullTimeLiveMatchStats.MatchId);
                         if (matchToSet == null)
                         {
-                            vtr.SetError($"Match with match id {fullTimeLiveMatchStats.SportDataMatchId} was not found");
+                            vtr.SetError($"Match with match id {fullTimeLiveMatchStats.MatchId} was not found");
                         }
                         else
                         {

@@ -9,7 +9,7 @@ namespace Resume.Domain
     /// </summary>
     public class LiveMatchStats
     {
-        public int SportDataMatchId { get; set; }
+        public string MatchId { get; set; }
         public int GoalsScoredHomeSide { get; set; }
         public int GoalsScoredAwaySide { get; set; }
         public int RedCardsHome { get; set; }
@@ -20,9 +20,9 @@ namespace Resume.Domain
         {
         }
 
-        public LiveMatchStats(int sportDataMatchId, int goalsScoredHomeSide, int goalsScoredAwaySide, int redCardsHome, int redCardsAway, MatchStatus matchStatus)
+        public LiveMatchStats(string matchId, int goalsScoredHomeSide, int goalsScoredAwaySide, int redCardsHome, int redCardsAway, MatchStatus matchStatus)
         {
-            SportDataMatchId = sportDataMatchId;
+            MatchId = matchId;
             GoalsScoredHomeSide = goalsScoredHomeSide;
             GoalsScoredAwaySide = goalsScoredAwaySide;
             RedCardsHome = redCardsHome;
