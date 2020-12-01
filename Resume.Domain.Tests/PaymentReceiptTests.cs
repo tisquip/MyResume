@@ -12,7 +12,7 @@ namespace Resume.Domain.Tests
         public void SetNotificationWasSentTest_AssesReturnedResult(bool notificationWasSet, bool expectedResultSucceeded)
         {
             //Arrange
-            PaymentReceipt paymentReceipt = new PaymentReceipt(new ValueObjects.Money(5));
+            PaymentReceipt paymentReceipt = new PaymentReceipt(new ValueObjects.Money(5), Guid.NewGuid().ToString());
 
             //Act
             var result = paymentReceipt.SetNotificationWasSent(notificationWasSet);
@@ -28,7 +28,7 @@ namespace Resume.Domain.Tests
         public void SetNotificationWasSentTest_AssessPropertyHasChanged(bool notificationWasSet, bool expectedNotificationPropertyValue)
         {
             //Arrange
-            PaymentReceipt paymentReceipt = new PaymentReceipt(new ValueObjects.Money(8));
+            PaymentReceipt paymentReceipt = new PaymentReceipt(new ValueObjects.Money(8), Guid.NewGuid().ToString());
 
             //Act
             var result = paymentReceipt.SetNotificationWasSent(notificationWasSet);

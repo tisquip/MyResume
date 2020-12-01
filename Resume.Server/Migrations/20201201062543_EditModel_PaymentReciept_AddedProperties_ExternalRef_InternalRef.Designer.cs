@@ -4,14 +4,16 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Resume.Server.Migrations
 {
     [DbContext(typeof(ResumeDbContext))]
-    partial class ResumeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201201062543_EditModel_PaymentReciept_AddedProperties_ExternalRef_InternalRef")]
+    partial class EditModel_PaymentReciept_AddedProperties_ExternalRef_InternalRef
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
