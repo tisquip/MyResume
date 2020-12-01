@@ -18,19 +18,20 @@ namespace Resume.Domain
         public string Name { get; private set; }
         public string TeamId { get; private set; }
         public string LogoUrl { get; private set; }
-        public DateTime LastCheckedFromApi { get; set; }
-        public string JSListOfFootBallMatch_Matches { get; set; } = "[]";
+        public DateTime LastUpdateOfSeasonMatches { get; private set; }
+        public string SeasonIdForFootballMatches { get; private set; }
+        public string JSListOfFootBallMatch_Matches { get; private set; } = "[]";
 
         protected FootballTeam()
         {
         }
 
-        public FootballTeam(string name, string teamId, string logoUrl, DateTime lastCheckedFromApi, List<FootBallMatch> footBallMatches)
+        public FootballTeam(string name, string teamId, string logoUrl, List<FootBallMatch> footBallMatches)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             TeamId = teamId;
             LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl));
-            LastCheckedFromApi = lastCheckedFromApi;
+            LastUpdateOfSeasonMatches = DateTime.UtcNow;
             JSListOfFootBallMatch_Matches = footBallMatches?.SerializeToJson() ?? "[]";
         }
 
@@ -63,6 +64,49 @@ namespace Resume.Domain
                             JSListOfFootBallMatch_Matches = matches.SerializeToJson();
                             vtr = await rootAggregateRepositoryFootballTeam.Update(this);
                         }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await exceptionNotifier.Notify(ex, vtr);
+            }
+            return vtr;
+        }
+
+        public async Task<Result> InsertNewMatchesForSeason(IExceptionNotifier exceptionNotifier, IRootAggregateRepository<FootballTeam> rootAggregateRepositoryFootBallTeam, string seasonIdForFootballMatches, List<FootBallMatch> footBallMatches)
+        {
+            Result vtr = new Result(true);
+            try
+            {
+                bool footballMatchesAreValid = footBallMatches?.Any() ?? false;
+                bool seasonIdIsValid = !String.IsNullOrWhiteSpace(seasonIdForFootballMatches);
+                if (!footballMatchesAreValid || !seasonIdIsValid)
+                {
+                    List<string> invalidArguments = new List<string>();
+                    if (!footballMatchesAreValid)
+                    {
+                        invalidArguments.Add(nameof(footBallMatches));
+                    }
+
+                    if (!seasonIdIsValid)
+                    {
+                        invalidArguments.Add(nameof(seasonIdForFootballMatches));
+                    }
+
+                    vtr.SetErrorInvalidArguments(invalidArguments.ToArray());
+                }
+                else
+                {
+                    if (SeasonIdForFootballMatches.Equals(seasonIdForFootballMatches, StringComparison.OrdinalIgnoreCase))
+                    {
+                        vtr.SetError($"Matches with season id {seasonIdForFootballMatches} have already been added");
+                    }
+                    else
+                    {
+                        SeasonIdForFootballMatches = seasonIdForFootballMatches;
+                        JSListOfFootBallMatch_Matches = footBallMatches.SerializeToJson();
+                        vtr = await rootAggregateRepositoryFootBallTeam.Update(this);
                     }
                 }
             }

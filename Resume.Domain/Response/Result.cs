@@ -10,6 +10,18 @@ namespace Resume.Domain.Response
         public bool Succeeded { get; set; }
         public List<string> Messages { get; set; } = new List<string>();
 
+        public Result()
+        {
+        }
+
+        public Result(bool setGenericErrorMessage)
+        {
+            if (setGenericErrorMessage)
+            {
+                SetError();
+            }
+        }
+
         public void SetError(List<string> errorMessages = null)
         {
             if (!errorMessages?.Any() ?? true)
@@ -63,7 +75,15 @@ namespace Resume.Domain.Response
     public class Result<T> : Result
     {
         public T ReturnedObject { get; set; }
-        public void SetSuccessObject(T objectToReturn, List<string> notices)
+        public Result()
+        {
+        }
+
+        public Result(bool setGenericErrorMessage) : base(setGenericErrorMessage)
+        {
+        }
+
+        public void SetSuccessObject(T objectToReturn, List<string> notices = null)
         {
             ReturnedObject = objectToReturn;
             SetSuccess(notices);

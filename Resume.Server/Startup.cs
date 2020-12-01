@@ -13,6 +13,7 @@ using Serilog;
 using Resume.Domain.Interfaces;
 using Resume.Server.Services;
 using Resume.Server.Services.FootballWorkerService;
+using Resume.Server.Services.FootballWorkerService.InterfaceImplementations;
 
 namespace Resume.Server
 {
@@ -37,6 +38,8 @@ namespace Resume.Server
             services.AddScoped<IEmailService, SendGridEmailService>();
             services.AddScoped<IExceptionNotifier, ExceptionNotifier>();
             services.AddHttpClient<SportDataApiFootballWorkerService>();
+            services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();
+            services.AddHostedService<BackgroundFootballService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

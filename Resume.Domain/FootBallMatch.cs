@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Resume.Domain.BaseClasses;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace Resume.Domain
     /// <summary>
     /// In order for me to develop faster, these classes are just going to be serialized as JSON in thier Aggregate root, so public setters and the like. The only proper domain class that protects its invariants and tries to adhere to DDD is PaymentReceipt.cs
     /// </summary>
-    public class FootBallMatch
+    public class FootBallMatch : ValueObjectBase<FootBallMatch>
     {
         public string SignalRBroadcastId => MatchId.ToString();
         public string MatchId { get; set; }
@@ -36,8 +37,18 @@ namespace Resume.Domain
             AwayTeamName = awayTeamName;
             AwayTeamId = awayTeamId;
             AwayTeamLogoUrl = awayTeamLogoUrl;
-            VenueName = venueName;
-            VenueCity = venueCity;
+            VenueName = venueName ?? "TBA";
+            VenueCity = venueCity ?? "TBA";
+        }
+
+        protected override bool EqualsCore(FootBallMatch other)
+        {
+            return MatchId == other.MatchId;
+        }
+
+        protected override int GetHashCodeCore()
+        {
+            return MatchId.GetHashCode();
         }
     }
 }
