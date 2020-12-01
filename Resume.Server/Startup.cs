@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Data;
 using Serilog;
+using Resume.Domain.Interfaces;
+using Resume.Server.Services;
+using Resume.Server.Services.FootballWorkerService;
 
 namespace Resume.Server
 {
@@ -30,6 +33,10 @@ namespace Resume.Server
 
             services.AddDbContext<ResumeDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("ResumeDbContext")));
+
+            services.AddScoped<IEmailService, SendGridEmailService>();
+            services.AddScoped<IExceptionNotifier, ExceptionNotifier>();
+            services.AddHttpClient<SportDataApiFootballWorkerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
