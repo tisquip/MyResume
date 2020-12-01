@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Resume.Domain;
 using Resume.Domain.Interfaces;
 using Resume.Server.Data;
+using Resume.Server.Services.ExceptionNotifierServices;
 using Resume.Server.Services.FootballWorkerService;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Resume.Server.Services
     {
         private readonly IFootBallWorker footBallWorker;
         private readonly ResumeBackgroundServiceDbContext resumeBackgroundServiceDbContext;
+        IExceptionNotifierSingleton exceptionNotifier;
         #region Cheating
         //Because its a sample, and the api key can only afford 500 calls free per month, limitation is going to be on asernal team, my wifes favorite, and the english premier league. These id's are limited to the SportDataApi service. I did not want to restrict the actual footballWorker to those id's from within the class itself, I wanted it to be from the client (this), so that its getting exactly what its calling for and it know this - the ids themselves cause this class to be coupled, in a different world, it might be best to place them in a config file, so it can be changed easily if the IFootBallWorker is changed or was dynamically despatched 
         string arsenalId = "2522";
@@ -27,27 +29,24 @@ namespace Resume.Server.Services
         Timer timerLiveMatch;
         List<FootBallMatch> matchesForLiveBroadcast = new List<FootBallMatch>();
 
-        //public BackgroundFootballService(IExceptionNotifier exceptionNotifier, IFootBallWorker footBallWorker)
-        //{
-        //    this.footBallWorker = footBallWorker;
-        //}
 
-        public BackgroundFootballService(IFootBallWorker footBallWorker, ResumeBackgroundServiceDbContext resumeBackgroundServiceDbContext)
+        public BackgroundFootballService(IExceptionNotifierSingleton exceptionNotifier, IFootBallWorker footBallWorker, ResumeBackgroundServiceDbContext resumeBackgroundServiceDbContext)
         {
+            this.exceptionNotifier = exceptionNotifier;
             this.footBallWorker = footBallWorker;
             this.resumeBackgroundServiceDbContext = resumeBackgroundServiceDbContext;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
                 timerPopulateNewSeason = new Timer(PopulateNewSeason, null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                await exceptionNotifier.Notify(ex);
             }
-            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -58,29 +57,49 @@ namespace Resume.Server.Services
 
         private async void PopulateNewSeason(object state)
         {
-            var resultCurrentSeason = await footBallWorker.GetCurrentSeason(englishPremierLeagueId);
-            FootballTeam arsernal = null; //TODO: Implement
-            if ((resultCurrentSeason?.ReturnedObject?.IsCurrent ?? false)
-                && !resultCurrentSeason.ReturnedObject.SeasonId.Equals(arsernal?.SeasonIdForFootballMatches ?? "", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                string newSeasonId = resultCurrentSeason.ReturnedObject.SeasonId;
-                var resultMatches = await footBallWorker.GetMatchesForSeason(newSeasonId);
-
-                if (resultMatches.ReturnedObject?.Any() ?? false)
+                var resultCurrentSeason = await footBallWorker.GetCurrentSeason(englishPremierLeagueId);
+                FootballTeam arsernal = await GetArsernal();
+                if (arsernal == null)
                 {
-                    List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
-                    if (matchesWhereArsenalIsPlaying?.Any() ?? false)
+                    var resultOfTeam = await footBallWorker.GetTeam(arsenalId);
+                    if (resultOfTeam.Succeeded)
                     {
-                        //var insertResult = arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositoryFootBallTeam, newSeasonId, matchesWhereArsenalIsPlaying);
-
-                        //if(insertResult.Succedded)
-                        //{
-                        //    matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
-                        //    int sixteyDaysInMilliSeconds = TimeSpan.FromDays(60).Milliseconds;
-                        //    timerPopulateNewSeason.Change(sixteyDaysInMilliSeconds, 0);
-                        //}
+                        arsernal = resultOfTeam.ReturnedObject;
+                        resumeBackgroundServiceDbContext.FootballTeam.Add(arsernal);
+                        await resumeBackgroundServiceDbContext.SaveChangesAsync();
+                        resumeBackgroundServiceDbContext.ChangeTracker.Clear();
                     }
                 }
+
+
+                if ((resultCurrentSeason?.ReturnedObject?.IsCurrent ?? false)
+                    && !resultCurrentSeason.ReturnedObject.SeasonId.Equals(arsernal?.SeasonIdForFootballMatches ?? "", StringComparison.OrdinalIgnoreCase))
+                {
+                    string newSeasonId = resultCurrentSeason.ReturnedObject.SeasonId;
+                    var resultMatches = await footBallWorker.GetMatchesForSeason(newSeasonId);
+
+                    if (resultMatches.ReturnedObject?.Any() ?? false)
+                    {
+                        List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
+                        if (matchesWhereArsenalIsPlaying?.Any() ?? false)
+                        {
+                            //var insertResult = arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositoryFootBallTeam, newSeasonId, matchesWhereArsenalIsPlaying);
+
+                            //if(insertResult.Succedded)
+                            //{
+                            //    matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
+                            //    int sixteyDaysInMilliSeconds = TimeSpan.FromDays(60).Milliseconds;
+                            //    timerPopulateNewSeason.Change(sixteyDaysInMilliSeconds, 0);
+                            //}
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await exceptionNotifier.Notify(ex);
             }
         }
 

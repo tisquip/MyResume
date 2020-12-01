@@ -12,5 +12,6 @@ namespace Resume.Server.Services.FootballWorkerService
         Task<Result<FootballWorkerServiceSeason>> GetCurrentSeason(string leagueId);
         Task<Result<List<FootBallMatch>>> GetMatchesForSeason(string seasonId);
         Task<Result<LiveMatchStats>> GetLiveDataForMatch(string matchId);
+        Task<Result<FootballTeam>> GetTeam(string teamId);
     }
 }

@@ -26,13 +26,11 @@ namespace Resume.Domain
         {
         }
 
-        public FootballTeam(string name, string teamId, string logoUrl, List<FootBallMatch> footBallMatches)
+        public FootballTeam(string name, string teamId, string logoUrl)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             TeamId = teamId;
             LogoUrl = logoUrl ?? throw new ArgumentNullException(nameof(logoUrl));
-            LastUpdateOfSeasonMatches = DateTime.UtcNow;
-            JSListOfFootBallMatch_Matches = footBallMatches?.SerializeToJson() ?? "[]";
         }
 
         public async Task<Result> AddFullTimeLiveMatchStats(IExceptionNotifier exceptionNotifier, IRootAggregateRepository<FootballTeam> rootAggregateRepositoryFootballTeam, LiveMatchStats fullTimeLiveMatchStats)
@@ -106,6 +104,7 @@ namespace Resume.Domain
                     {
                         SeasonIdForFootballMatches = seasonIdForFootballMatches;
                         JSListOfFootBallMatch_Matches = footBallMatches.SerializeToJson();
+                        LastUpdateOfSeasonMatches = DateTime.UtcNow;
                         vtr = await rootAggregateRepositoryFootBallTeam.Update(this);
                     }
                 }
