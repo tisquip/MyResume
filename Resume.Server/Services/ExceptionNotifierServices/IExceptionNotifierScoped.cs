@@ -1,6 +1,6 @@
 ﻿using Resume.Domain.Interfaces;
 
-namespace Resume.Server.Services
+namespace Resume.Server.Services.ExceptionNotifierServices
 {
     public interface IExceptionNotifierScoped : IExceptionNotifier
     {

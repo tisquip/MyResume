@@ -1,4 +1,5 @@
 ﻿using Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Resume.Domain;
 using Resume.Domain.Interfaces;
@@ -81,6 +82,11 @@ namespace Resume.Server.Services
                     }
                 }
             }
+        }
+
+        async Task<FootballTeam> GetArsernal()
+        {
+            return await resumeBackgroundServiceDbContext.FootballTeam.AsNoTracking().FirstOrDefaultAsync(t => t.TeamId == arsenalId);
         }
 
 

@@ -15,6 +15,8 @@ using Resume.Server.Services;
 using Resume.Server.Services.FootballWorkerService;
 using Resume.Server.Services.FootballWorkerService.InterfaceImplementations;
 using Resume.Server.Data;
+using Resume.Server.Services.EmailServices;
+using Resume.Server.Services.ExceptionNotifierServices;
 
 namespace Resume.Server
 {
