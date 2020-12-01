@@ -10,6 +10,7 @@ namespace Data
     public class ResumeDbContext : DbContext
     {
         public DbSet<PaymentReceipt> PaymentReceipt { get; set; }
+        public DbSet<FootballTeam> FootballTeam { get; set; }
         public ResumeDbContext (DbContextOptions<ResumeDbContext> options)
             : base(options)
         {

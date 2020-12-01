@@ -14,6 +14,7 @@ using Resume.Domain.Interfaces;
 using Resume.Server.Services;
 using Resume.Server.Services.FootballWorkerService;
 using Resume.Server.Services.FootballWorkerService.InterfaceImplementations;
+using Resume.Server.Data;
 
 namespace Resume.Server
 {
@@ -35,10 +36,19 @@ namespace Resume.Server
             services.AddDbContext<ResumeDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("ResumeDbContext")));
 
-            services.AddScoped<IEmailService, SendGridEmailService>();
-            services.AddScoped<IExceptionNotifier, ExceptionNotifier>();
+            services.AddDbContext<ResumeBackgroundServiceDbContext>(options =>
+                   options.UseSqlServer(Configuration.GetConnectionString("ResumeDbContext")), ServiceLifetime.Singleton);
+
+            services.AddScoped<IEmailServiceScoped, SendGridEmailServiceScoped>();
+            services.AddSingleton<IEmailServiceSingleton, SendGridEmailServiceSingleton>();
+
+            services.AddScoped<IExceptionNotifierScoped, ExceptionNotifierScoped>();
+            services.AddSingleton<IExceptionNotifierSingleton, ExeptionNotifierSingleton>();
+            
             services.AddHttpClient<SportDataApiFootballWorkerService>();
+
             services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();
+
             services.AddHostedService<BackgroundFootballService>();
         }
 

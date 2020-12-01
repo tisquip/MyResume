@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Resume.Server.Services
 {
-    public class ExceptionNotifier : IExceptionNotifier
+    public class ExceptionNotifierScoped : IExceptionNotifierScoped
     {
-        private readonly IEmailService emailService;
+        private readonly IEmailServiceScoped emailService;
         string adminEmail;
 
-        public ExceptionNotifier(IEmailService emailService, IConfiguration configuration)
+        public ExceptionNotifierScoped(IEmailServiceScoped emailService, IConfiguration configuration)
         {
             //TODO: Magic string
             adminEmail = configuration.GetValue<string>("AdminEmail"); 

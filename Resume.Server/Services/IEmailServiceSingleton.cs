@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Resume.Server.Services
 {
-    public interface IEmailService
+    public interface IEmailServiceSingleton
     {
         Task<Result> Send(string emailAddress, string emailBody);
     }

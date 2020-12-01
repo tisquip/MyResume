@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace Resume.Server.Services
 {
-    public class SendGridEmailService : IEmailService
+    public class SendGridEmailServiceSingleton : IEmailServiceSingleton
     {
         public async Task<Result> Send(string emailAddress, string emailBody)
         {
-            //TODO: Implement
-            throw new NotImplementedException();
+            throw new NotImplementedException(); //TODO: Implement
         }
     }
 }
