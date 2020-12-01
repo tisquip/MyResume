@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Resume.Domain\Resume.Domain.csproj" />
-    <ProjectReference Include="..\Resume.Persistence\Resume.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

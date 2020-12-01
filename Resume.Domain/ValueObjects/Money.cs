@@ -7,7 +7,9 @@ namespace Resume.Domain.ValueObjects
     {
         //Currency not there since its a simple fast project
         public decimal Amount { get; }
-
+        protected Money()
+        {
+        }
         public Money(decimal amount)
         {
             if (amount <= 0)
