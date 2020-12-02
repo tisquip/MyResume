@@ -17,6 +17,8 @@ using Resume.Server.Services.FootballWorkerService.InterfaceImplementations;
 using Resume.Server.Data;
 using Resume.Server.Services.EmailServices;
 using Resume.Server.Services.ExceptionNotifierServices;
+using Resume.Server.Data.Repositories;
+using Resume.Domain;
 
 namespace Resume.Server
 {
@@ -46,7 +48,10 @@ namespace Resume.Server
 
             services.AddScoped<IExceptionNotifierScoped, ExceptionNotifierScoped>();
             services.AddSingleton<IExceptionNotifierSingleton, ExeptionNotifierSingleton>();
-            
+
+            services.AddSingleton<IRootAggregateRepositorySingleton<FootballTeam>, RootAggregateRepositorySingletonFootballTeam>();
+            services.AddScoped<IRootAggregateRepositoryScoped<FootballTeam>, RootAggregateRepositoryScopedFootballTeam>();
+
             services.AddHttpClient<SportDataApiFootballWorkerService>();
 
             services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();

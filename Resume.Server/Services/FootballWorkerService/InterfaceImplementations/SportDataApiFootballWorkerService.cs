@@ -49,7 +49,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -59,8 +59,37 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
         public async Task<Result<LiveMatchStats>> GetLiveDataForMatch(string matchId)
         {
-            //https://app.sportdataapi.com/api/v1/soccer/matches/139383?apikey=ae528850-33a5-11eb-9580-5139957b12ee
-            throw new NotImplementedException();
+            //Rotate key cause I accidentally exposed it when hurrying to finish up this class. Errors do happen - but naturally, keys are then supposed to be changed when going into production and/or have separate keys for dev, staging and produc
+
+            //SportDataApiResponse_GetLiveDataForMatch
+
+            Result<LiveMatchStats> vtr = new Result<LiveMatchStats>(true);
+            try
+            {
+                string url = $"{urlBaseSportDataApi}matches/{matchId}?apikey={apiKey}";
+
+                var sportDataApiResponse_GetLiveDataForMatch = await httpClient.GetFromJsonAsync<SportDataApiResponse_GetLiveDataForMatch>(url);
+
+                if (sportDataApiResponse_GetLiveDataForMatch?.data == null)
+                {
+                    vtr.SetError($"No live data found for match with id {matchId}");
+                }
+                else
+                {
+                    var liveMatchStatsFromApi = sportDataApiResponse_GetLiveDataForMatch.data;
+                    var goalsNormalAndExtraTime = GetScoreExludingPenaltyScore(liveMatchStatsFromApi.stats);
+                    var penaltyGoals = GetGoalsFromStringResult(liveMatchStatsFromApi.stats?.ps_score);
+
+                    LiveMatchStats liveMatchStats = new LiveMatchStats(liveMatchStatsFromApi.match_id.ToString(), goalsNormalAndExtraTime.HomeGoals, goalsNormalAndExtraTime.AwayGoals, penaltyGoals.HomeGoals, penaltyGoals.AwayGoals, GetMatchStatus(liveMatchStatsFromApi));
+
+                    vtr.SetSuccessObject(liveMatchStats);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return vtr;
         }
 
         public async Task<Result<List<FootBallMatch>>> GetMatchesForSeason(string seasonId)
@@ -88,10 +117,110 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
                     vtr.SetSuccessObject(footBallMatches);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
+            return vtr;
+        }
+
+        public async Task<Result<FootballTeam>> GetTeam(string teamId)
+        {
+            Result<FootballTeam> vtr = new Result<FootballTeam>(true);
+            try
+            {
+                string url = $"{urlBaseSportDataApi}teams/{teamId}?apikey={apiKey}";
+
+                var sportDataApiResponse_GetTeam = await httpClient.GetFromJsonAsync<SportDataApiResponse_GetTeam>(url);
+
+                if (sportDataApiResponse_GetTeam?.data == null)
+                {
+                    vtr.SetError($"No team found with id {teamId}");
+                }
+                else
+                {
+                    var teamFromApi = sportDataApiResponse_GetTeam.data;
+                    FootballTeam footballTeam = new FootballTeam(teamFromApi.name, teamFromApi.team_id.ToString(), teamFromApi.logo);
+
+                    vtr.SetSuccessObject(footballTeam);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return vtr;
+        }
+
+        MatchStatus GetMatchStatus(SportDataApiResponse_GetLiveDataForMatch_Data data)
+        {
+            int actualCodeFromApi = data?.status_code ?? 0; //0 = Not Started according to SportDataApi docs;
+            return actualCodeFromApi switch
+            {
+                0 => MatchStatus.NotStarted,
+
+                1 | 12 | 13 | 14 => MatchStatus.Started,
+
+                11 => MatchStatus.HalfTime,
+
+                3 | 31 | 32 | 5 => MatchStatus.FullTime,
+
+                _ => MatchStatus.ApiCancelled //<-- Dont want to write logic for a delayed game, postponed game and the like so just going to cancel
+            };
+        }
+
+        (int HomeGoals, int AwayGoals, bool WasSet) GetScoreExludingPenaltyScore(SportDataApiResponse_GetLiveDataForMatch_Stats stats)
+        {
+            (int HomeGoals, int AwayGoals, bool WasSet) vtr = (0, 0, false);
+            if (stats?.ht_score != null)
+            {
+                var ht_score = GetGoalsFromStringResult(stats.ht_score);
+                var ft_score = GetGoalsFromStringResult(stats.ft_score);
+                var et_score = GetGoalsFromStringResult(stats.et_score);
+
+                vtr.HomeGoals = ht_score.HomeGoals;
+                vtr.AwayGoals = ht_score.AwayGoals;
+
+                if (ft_score.HomeGoals > 0 || ft_score.AwayGoals > 0)
+                {
+                    vtr.HomeGoals = ft_score.HomeGoals;
+                    vtr.AwayGoals = ft_score.AwayGoals;
+                }
+
+                if (et_score.HomeGoals > 0 || et_score.AwayGoals > 0)
+                {
+                    vtr.HomeGoals = et_score.HomeGoals;
+                    vtr.AwayGoals = et_score.AwayGoals;
+                }
+
+                vtr.WasSet = true;
+            }
+
+            return vtr;
+        }
+
+        (int HomeGoals, int AwayGoals) GetGoalsFromStringResult(string result)
+        {
+            (int HomeGoals, int AwayGoals) vtr = (0, 0);
+
+            if (!string.IsNullOrWhiteSpace(result) && result.Contains("-"))
+            {
+                result = result.Trim();
+                try
+                {
+                    int indexOfHyphen = result.IndexOf("-");
+                    string homeGoalsString = result.Substring(0, indexOfHyphen)?.Trim();
+                    string awayGoalsString = result.Substring(indexOfHyphen + 1)?.Trim();
+
+                    int.TryParse(homeGoalsString, out vtr.HomeGoals);
+                    int.TryParse(awayGoalsString, out vtr.AwayGoals);
+                }
+                catch (Exception)
+                {
+                }
+
+            }
+
             return vtr;
         }
 
@@ -102,6 +231,8 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
                 httpClient.Dispose();
             }
         }
+
+
     }
 
     #region Classes pasted using pasteJson classes, theses are the responses from the api that need to be converted to the appropriate classes
@@ -134,76 +265,6 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
     #endregion
 
     #region Responses from GetMatchesForSeason
-    //public class SportDataApiResponse_GetMatchesForSeason
-    //{
-    //    public SportDataApiResponse_GetMatchesForSeason_Query query { get; set; }
-    //    public SportDataApiResponse_GetMatchesForSeason_Data data { get; set; }
-    //}
-
-    //public class SportDataApiResponse_GetMatchesForSeason_Query
-    //{
-    //    public string season_id { get; set; }
-    //    public string date_from { get; set; }
-    //    public string apikey { get; set; }
-    //}
-
-    //public class SportDataApiResponse_GetMatchesForSeason_Data
-    //{
-    //    public SportDataApiResponse_GetMatchesForSeason_Match[] matches { get; set; }
-    //}
-
-    //public class SportDataApiResponse_GetMatchesForSeason_Match
-    //{
-    //    public int match_id { get; set; }
-    //    public int status_code { get; set; }
-    //    public string status { get; set; }
-    //    public string match_start { get; set; }
-    //    public int league_id { get; set; }
-    //    public int season_id { get; set; }
-    //    public Team home_team { get; set; }
-    //    public Team away_team { get; set; }
-    //    public Stats stats { get; set; }
-    //    public Venue venue { get; set; }
-    //}
-    //public class Team
-    //{
-    //    public int team_id { get; set; }
-    //    public string name { get; set; }
-    //    public string short_code { get; set; }
-    //    public string logo { get; set; }
-    //    public Country country { get; set; }
-    //}
-
-    //public class Country
-    //{
-    //    public int country_id { get; set; }
-    //    public string name { get; set; }
-    //    public string country_code { get; set; }
-    //    public string continent { get; set; }
-    //}
-
-
-    //public class Stats
-    //{
-    //    public int home_score { get; set; }
-    //    public int away_score { get; set; }
-    //    public string ht_score { get; set; }
-    //    public string ft_score { get; set; }
-    //    public object et_score { get; set; }
-    //    public object ps_score { get; set; }
-    //}
-
-    //public class Venue
-    //{
-    //    public int venue_id { get; set; }
-    //    public string name { get; set; }
-    //    public int capacity { get; set; }
-    //    public string city { get; set; }
-    //    public int country_id { get; set; }
-    //}
-
-
-
     public class SportDataApiResponse_GetMatchesForSeason
     {
         public SportDataApiResponse_GetMatchesForSeason_Query query { get; set; }
@@ -295,5 +356,128 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
 
     #endregion
+
+    #region Responses from GetTeam
+
+    public class SportDataApiResponse_GetTeam
+    {
+        public SportDataApiResponse_GetTeam_Query query { get; set; }
+        public SportDataApiResponse_GetTeam_Data data { get; set; }
+    }
+
+    public class SportDataApiResponse_GetTeam_Query
+    {
+        public string apikey { get; set; }
+    }
+
+    public class SportDataApiResponse_GetTeam_Data
+    {
+        public int team_id { get; set; }
+        public string name { get; set; }
+        public string short_code { get; set; }
+        public string logo { get; set; }
+        public SportDataApiResponse_GetTeam_Country country { get; set; }
+    }
+
+    public class SportDataApiResponse_GetTeam_Country
+    {
+        public int country_id { get; set; }
+        public string name { get; set; }
+        public string country_code { get; set; }
+        public string continent { get; set; }
+    }
+
+    #endregion
+
+    #region Response from GetLiveDataForMatch
+
+    public class SportDataApiResponse_GetLiveDataForMatch
+    {
+        public SportDataApiResponse_GetLiveDataForMatch_Query query { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Data data { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Query
+    {
+        public string apikey { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Data
+    {
+        public int match_id { get; set; }
+        public int league_id { get; set; }
+        public int season_id { get; set; }
+        public int status_code { get; set; }
+        public string status { get; set; }
+        public string match_start { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Stats stats { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Home_Team home_team { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Away_Team away_team { get; set; }
+        public object match_statistics { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Lineup[] lineups { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Venue venue { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Stats
+    {
+        public string ht_score { get; set; }
+        public string ft_score { get; set; }
+        public string et_score { get; set; }
+        public string ps_score { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Home_Team
+    {
+        public int team_id { get; set; }
+        public string name { get; set; }
+        public string short_code { get; set; }
+        public string logo { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Country country { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Country
+    {
+        public int country_id { get; set; }
+        public string name { get; set; }
+        public string country_code { get; set; }
+        public string continent { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Away_Team
+    {
+        public int team_id { get; set; }
+        public string name { get; set; }
+        public string short_code { get; set; }
+        public string logo { get; set; }
+        public SportDataApiResponse_GetLiveDataForMatch_Country1 country { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Country1
+    {
+        public int country_id { get; set; }
+        public string name { get; set; }
+        public string country_code { get; set; }
+        public string continent { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Venue
+    {
+        public int venue_id { get; set; }
+        public string name { get; set; }
+        public int capacity { get; set; }
+        public string city { get; set; }
+        public int country_id { get; set; }
+    }
+
+    public class SportDataApiResponse_GetLiveDataForMatch_Lineup
+    {
+        public int team_id { get; set; }
+        public string formation { get; set; }
+        public int formation_confirmed { get; set; }
+        public object[] players { get; set; }
+    }
+
+    #endregion
+
     #endregion
 }

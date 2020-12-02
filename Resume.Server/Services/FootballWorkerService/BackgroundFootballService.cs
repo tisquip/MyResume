@@ -73,7 +73,6 @@ namespace Resume.Server.Services
                     }
                 }
 
-
                 if ((resultCurrentSeason?.ReturnedObject?.IsCurrent ?? false)
                     && !resultCurrentSeason.ReturnedObject.SeasonId.Equals(arsernal?.SeasonIdForFootballMatches ?? "", StringComparison.OrdinalIgnoreCase))
                 {
@@ -85,9 +84,9 @@ namespace Resume.Server.Services
                         List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
                         if (matchesWhereArsenalIsPlaying?.Any() ?? false)
                         {
-                            //var insertResult = arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositoryFootBallTeam, newSeasonId, matchesWhereArsenalIsPlaying);
+                            //var insertResult = arsernal.InsertNewMatchesForSeason(exceptionNotifier, , newSeasonId, matchesWhereArsenalIsPlaying);
 
-                            //if(insertResult.Succedded)
+                            //if (insertResult.Succedded)
                             //{
                             //    matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
                             //    int sixteyDaysInMilliSeconds = TimeSpan.FromDays(60).Milliseconds;
