@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resume.Server", "Resume.Ser
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{D1429D97-3844-4728-9B31-56280611178B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resume.Grpc", "Resume.Grpc\Resume.Grpc.csproj", "{4C30FD57-2FD2-4793-BB92-BF2C31F6CC02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Resume.Grpc", "Resume.Grpc\Resume.Grpc.csproj", "{4C30FD57-2FD2-4793-BB92-BF2C31F6CC02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

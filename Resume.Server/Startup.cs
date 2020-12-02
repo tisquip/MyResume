@@ -19,6 +19,8 @@ using Resume.Server.Services.EmailServices;
 using Resume.Server.Services.ExceptionNotifierServices;
 using Resume.Server.Data.Repositories;
 using Resume.Domain;
+using Resume.Server.Hubs;
+using Resume.Application;
 
 namespace Resume.Server
 {
@@ -57,6 +59,8 @@ namespace Resume.Server
             services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();
 
             services.AddHostedService<BackgroundFootballService>();
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +84,7 @@ namespace Resume.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapHub<MatchHub>($"/{URLS.HubLiveMatchEnpointNameOnly_NotUrl}");
             });
         }
     }

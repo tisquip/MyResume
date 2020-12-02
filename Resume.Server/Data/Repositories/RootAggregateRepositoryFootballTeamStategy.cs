@@ -14,12 +14,20 @@ namespace Resume.Server.Data.Repositories
     {
         public static async Task<Result> Update(ResumeBackgroundServiceDbContext db, FootballTeam footballTeam)
         {
-            return await ProcessUpdate(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
+            try
+            {
+                return await ProcessUpdate(e => { db.Attach(e); db.Update(e); }, async () => await db.SaveChangesAsync(), footballTeam);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         public static async Task<Result> Update(ResumeDbContext db, FootballTeam footballTeam)
         {
-            return await ProcessUpdate(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
+            return await ProcessUpdate(e => db.Update(e), async () => await db.SaveChangesAsync(), footballTeam);
         }
 
         public static Result<List<FootballTeam>> GetDetachedFromDatabase(ResumeDbContext db, Predicate<FootballTeam> predicate)
@@ -69,13 +77,14 @@ namespace Resume.Server.Data.Repositories
             return await ProcessDbSaveFunctions(proccessAll);
         }
 
-        static async Task<Result> ProcessUpdate(Action<IEntity> attachToDatabse, Func<Task<int>> saveChangesToDb, FootballTeam footballTeam)
+        static async Task<Result> ProcessUpdate(Action<IEntity> addToUpdateDb, Func<Task<int>> saveChangesToDb, FootballTeam footballTeam)
         {
 
             Func<Task<Result>> proccessAll = async () =>
             {
-                AttachToDb(attachToDatabse, footballTeam);
-                return await SaveChangesToDb(saveChangesToDb);
+                AttachToDbByUpdate(addToUpdateDb, footballTeam);
+                var r = await saveChangesToDb();
+                return Result.Ok();
             };
 
             return await ProcessDbSaveFunctions(proccessAll);
@@ -92,29 +101,37 @@ namespace Resume.Server.Data.Repositories
             {
                 vtr.SetError(dbEx.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 vtr.SetError();
             }
             return vtr;
         }
 
-        static void AttachToDb(Action<IEntity> attachToDatabse, FootballTeam footballTeam)
+        static void AttachToDbByUpdate(Action<IEntity> addUpdateToDatabaseTracking, FootballTeam footballTeam)
         {
             try
             {
-                attachToDatabse(footballTeam);
+                addUpdateToDatabaseTracking(footballTeam);
             }
             catch (Exception)
             {
             }
 
-            //If FootballTeam had any Navigation Properties that are entites themselves, then we would try and attach those as well
+            //If FootballTeam had any Navigation Properties that are entites themselves, then we would try and update those as well
         }
         static async Task<Result> SaveChangesToDb(Func<Task<int>> saveChangesToDb)
         {
-            int rowsAffected = await saveChangesToDb();
-            return (rowsAffected > 0) ? Result.Ok() : Result.Error();
+            try
+            {
+                int rowsAffected = await saveChangesToDb();
+                return (rowsAffected > 0) ? Result.Ok() : Result.Error();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
         
     }

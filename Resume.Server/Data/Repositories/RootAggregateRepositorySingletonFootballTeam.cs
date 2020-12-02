@@ -17,7 +17,9 @@ namespace Resume.Server.Data.Repositories
         public Task<Result> Update(FootballTeam rootAggregate)
         {
             var vtr = RootAggregateRepositoryFootballTeamStategy.Update(db, rootAggregate);
-            db.ChangeTracker.Clear(); //<-- DbContext is a singleton so dont want it having tracking info being just kept
+            //db.ChangeTracker.Clear(); //<-- DbContext is a singleton so dont want it having tracking info being just kept
+
+            db.Entry(rootAggregate).State = Microsoft.EntityFrameworkCore.EntityState.Detached; //Previous was throwing an error when I wanted to attach and update
             return vtr;
         }
 
@@ -29,7 +31,10 @@ namespace Resume.Server.Data.Repositories
         public async Task<Result> Insert(FootballTeam rootAggregate)
         {
             var vtr = await RootAggregateRepositoryFootballTeamStategy.Insert(db, rootAggregate);
-            db.ChangeTracker.Clear(); //<-- DbContext is a singleton so dont want it having tracking info being just kept
+
+            //db.ChangeTracker.Clear(); //<-- DbContext is a singleton so dont want it having tracking info being just kept weird wierd 
+
+            db.Entry(rootAggregate).State = Microsoft.EntityFrameworkCore.EntityState.Detached; //Previous was throwing an error when I wanted to attach and update
             return vtr;
         }
     }

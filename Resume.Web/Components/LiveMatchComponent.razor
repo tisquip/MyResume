@@ -1,0 +1,64 @@
+﻿@using Resume.Application.ViewModels
+@implements IDisposable
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <p>@liveMatchViewModel.Minute</p>
+    </div>
+    <div class="col-md-6 text-right">
+        <p>@homeTeamName <img class="kt-teamlogo" src="@homeTeamLogo" /></p>
+        <p>@liveMatchViewModel.GoalsHomeTeam</p>
+    </div>
+    <div class="col-md-6 text-left">
+        <p><img class="kt-teamlogo" src="@awayTeamLogo" />@awayTeamName </p>
+        <p>@liveMatchViewModel.GoalsHomeTeam</p>
+    </div>
+</div>
+
+
+
+@code {
+    string matchId;
+    string homeTeamLogo;
+    string homeTeamName;
+    string awayTeamLogo;
+    string awayTeamName;
+
+    LiveMatchViewModel liveMatchViewModel;
+
+    SignalRService signalRService;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        signalRService = await SignalRService.GetSignalRService();
+        signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
+        signalRService.OnLiveMatchView += OnLiveMatchViewModelRecieved;
+    }
+
+    async void OnLiveMatchViewModelRecieved(object sender, LiveMatchViewModel liveMatchViewModelArg)
+    {
+        if (liveMatchViewModelArg != null)
+        {
+            liveMatchViewModel = liveMatchViewModelArg;
+            if (liveMatchViewModel.MatchId != matchId)
+            {
+                homeTeamLogo = liveMatchViewModel.HomeTeamLogo;
+                homeTeamName = liveMatchViewModel.HomeTeamName;
+                awayTeamLogo = liveMatchViewModel.AwayTeamLogo;
+                awayTeamName = liveMatchViewModel.AwayTeamName;
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        if (signalRService != null)
+        {
+            signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
+        }
+    }
+
+}
+

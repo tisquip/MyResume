@@ -96,7 +96,7 @@ namespace Resume.Domain
                 }
                 else
                 {
-                    if (SeasonIdForFootballMatches.Equals(seasonIdForFootballMatches, StringComparison.OrdinalIgnoreCase))
+                    if (SeasonIdForFootballMatches?.Equals(seasonIdForFootballMatches, StringComparison.OrdinalIgnoreCase) ?? false)
                     {
                         vtr.SetError($"Matches with season id {seasonIdForFootballMatches} have already been added");
                     }
