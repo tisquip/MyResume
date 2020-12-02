@@ -3,7 +3,9 @@ using Resume.Domain;
 using Resume.Domain.Interfaces;
 using Resume.Domain.Response;
 using System;
+using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Resume.Server.Data.Repositories
@@ -12,21 +14,79 @@ namespace Resume.Server.Data.Repositories
     {
         public static async Task<Result> Update(ResumeBackgroundServiceDbContext db, FootballTeam footballTeam)
         {
-            return await Process(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
+            return await ProcessUpdate(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
         }
 
         public static async Task<Result> Update(ResumeDbContext db, FootballTeam footballTeam)
         {
-            return await Process(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
+            return await ProcessUpdate(e => db.Attach(e), async () => await db.SaveChangesAsync(), footballTeam);
         }
 
-        static async Task<Result> Process(Action<IEntity> attachToDatabse, Func<Task<int>> saveChangesToDb, FootballTeam footballTeam)
+        public static Result<List<FootballTeam>> GetDetachedFromDatabase(ResumeDbContext db, Predicate<FootballTeam> predicate)
+        {
+            return ProcessGetDetachedFromDatabase(db.FootballTeam.AsEnumerable(), predicate);
+        }
+
+        public static Result<List<FootballTeam>> GetDetachedFromDatabase(ResumeBackgroundServiceDbContext db, Predicate<FootballTeam> predicate)
+        {
+            return ProcessGetDetachedFromDatabase(db.FootballTeam.AsEnumerable(), predicate);
+        }
+
+        private static Result<List<FootballTeam>> ProcessGetDetachedFromDatabase(IEnumerable<FootballTeam> footballTeams, Predicate<FootballTeam> predicate)
+        {
+            if (predicate == null)
+            {
+                predicate = (f) => true;
+            }
+            Result<List<FootballTeam>> vtr = new Result<List<FootballTeam>>();
+            vtr.SetSuccessObject(footballTeams?.Where(f => predicate(f))?.ToList() ?? new List<FootballTeam>());
+            return vtr;
+        }
+
+        public static async Task<Result> Insert(ResumeDbContext db, FootballTeam footballTeam)
+        {
+            Result vtr = new Result();
+            vtr.SetError("Prohibited from inserting a new football team"); //<-- The only allowed place to insert a new team is in the hostedservice, which is a singleton and uses the singleton version of the dbcontext. I felt that I should not remove the method from the parent IRootAggregateRepository since there is also PaymentRecipt which can be inserted from a scoped perspective.
+           
+            return vtr;
+        }
+
+        public static async Task<Result> Insert(ResumeBackgroundServiceDbContext db, FootballTeam footballTeam)
+        {
+            return await ProcessInsert(e => db.Add(e), async () => await db.SaveChangesAsync(), footballTeam);
+        }
+
+
+
+        static async Task<Result> ProcessInsert(Action<IEntity> addEntityToDatabase, Func<Task<int>> saveChangesToDb, FootballTeam footBallTeam)
+        {
+            Func<Task<Result>> proccessAll = async () =>
+            {
+                addEntityToDatabase(footBallTeam);
+                return await SaveChangesToDb(saveChangesToDb);
+            };
+
+            return await ProcessDbSaveFunctions(proccessAll);
+        }
+
+        static async Task<Result> ProcessUpdate(Action<IEntity> attachToDatabse, Func<Task<int>> saveChangesToDb, FootballTeam footballTeam)
+        {
+
+            Func<Task<Result>> proccessAll = async () =>
+            {
+                AttachToDb(attachToDatabse, footballTeam);
+                return await SaveChangesToDb(saveChangesToDb);
+            };
+
+            return await ProcessDbSaveFunctions(proccessAll);
+        }
+
+        static async Task<Result> ProcessDbSaveFunctions(Func<Task<Result>> processAllSteps)
         {
             Result vtr = new Result(true);
             try
             {
-                AttachToDb(attachToDatabse, footballTeam);
-                vtr = await SaveChangesToDb(saveChangesToDb);
+                vtr = await processAllSteps();
             }
             catch (DbException dbEx)
             {

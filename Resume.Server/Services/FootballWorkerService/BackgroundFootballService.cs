@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Resume.Domain;
 using Resume.Domain.Interfaces;
 using Resume.Server.Data;
+using Resume.Server.Data.Repositories;
 using Resume.Server.Services.ExceptionNotifierServices;
 using Resume.Server.Services.FootballWorkerService;
 using System;
@@ -17,7 +18,7 @@ namespace Resume.Server.Services
     public class BackgroundFootballService : IHostedService, IDisposable
     {
         private readonly IFootBallWorker footBallWorker;
-        private readonly ResumeBackgroundServiceDbContext resumeBackgroundServiceDbContext;
+        private readonly IRootAggregateRepositorySingleton<FootballTeam> rootAggregateRepositorySingletonFootballTeams;
         IExceptionNotifierSingleton exceptionNotifier;
         #region Cheating
         //Because its a sample, and the api key can only afford 500 calls free per month, limitation is going to be on asernal team, my wifes favorite, and the english premier league. These id's are limited to the SportDataApi service. I did not want to restrict the actual footballWorker to those id's from within the class itself, I wanted it to be from the client (this), so that its getting exactly what its calling for and it know this - the ids themselves cause this class to be coupled, in a different world, it might be best to place them in a config file, so it can be changed easily if the IFootBallWorker is changed or was dynamically despatched 
@@ -30,11 +31,11 @@ namespace Resume.Server.Services
         List<FootBallMatch> matchesForLiveBroadcast = new List<FootBallMatch>();
 
 
-        public BackgroundFootballService(IExceptionNotifierSingleton exceptionNotifier, IFootBallWorker footBallWorker, ResumeBackgroundServiceDbContext resumeBackgroundServiceDbContext)
+        public BackgroundFootballService(IExceptionNotifierSingleton exceptionNotifier, IFootBallWorker footBallWorker, IRootAggregateRepositorySingleton<FootballTeam> rootAggregateRepositorySingletonFootballTeams)
         {
             this.exceptionNotifier = exceptionNotifier;
             this.footBallWorker = footBallWorker;
-            this.resumeBackgroundServiceDbContext = resumeBackgroundServiceDbContext;
+            this.rootAggregateRepositorySingletonFootballTeams = rootAggregateRepositorySingletonFootballTeams;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -60,16 +61,14 @@ namespace Resume.Server.Services
             try
             {
                 var resultCurrentSeason = await footBallWorker.GetCurrentSeason(englishPremierLeagueId);
-                FootballTeam arsernal = await GetArsernal();
+                FootballTeam arsernal = GetArsernal();
                 if (arsernal == null)
                 {
                     var resultOfTeam = await footBallWorker.GetTeam(arsenalId);
                     if (resultOfTeam.Succeeded)
                     {
                         arsernal = resultOfTeam.ReturnedObject;
-                        resumeBackgroundServiceDbContext.FootballTeam.Add(arsernal);
-                        await resumeBackgroundServiceDbContext.SaveChangesAsync();
-                        resumeBackgroundServiceDbContext.ChangeTracker.Clear();
+                        await rootAggregateRepositorySingletonFootballTeams.Insert(arsernal);
                     }
                 }
 
@@ -84,14 +83,14 @@ namespace Resume.Server.Services
                         List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
                         if (matchesWhereArsenalIsPlaying?.Any() ?? false)
                         {
-                            //var insertResult = arsernal.InsertNewMatchesForSeason(exceptionNotifier, , newSeasonId, matchesWhereArsenalIsPlaying);
+                            var insertResult = await arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositorySingletonFootballTeams, newSeasonId, matchesWhereArsenalIsPlaying);
 
-                            //if (insertResult.Succedded)
-                            //{
-                            //    matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
-                            //    int sixteyDaysInMilliSeconds = TimeSpan.FromDays(60).Milliseconds;
-                            //    timerPopulateNewSeason.Change(sixteyDaysInMilliSeconds, 0);
-                            //}
+                            if (insertResult.Succeeded)
+                            {
+                                matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
+                                int sixteyDaysInMilliSeconds = TimeSpan.FromDays(60).Milliseconds;
+                                timerPopulateNewSeason.Change(sixteyDaysInMilliSeconds, 0);
+                            }
                         }
                     }
                 }
@@ -102,9 +101,9 @@ namespace Resume.Server.Services
             }
         }
 
-        async Task<FootballTeam> GetArsernal()
+        FootballTeam GetArsernal()
         {
-            return await resumeBackgroundServiceDbContext.FootballTeam.AsNoTracking().FirstOrDefaultAsync(t => t.TeamId == arsenalId);
+            return rootAggregateRepositorySingletonFootballTeams.GetDetachedFromDatabase(t => t.TeamId == arsenalId)?.ReturnedObject?.FirstOrDefault();
         }
 
 

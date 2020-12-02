@@ -13,5 +13,9 @@ namespace Resume.Domain.Interfaces.RepoInterfaces
     public interface IRootAggregateRepository<T> where T: IRootAggregate
     {
         Task<Result> Update(T rootAggregate);
+
+        //Added these so that I just totally avoid using the dbcontext directly, e.g in the IHosted service found in the web server. Though these methods are not called in the domain project itself.
+        Task<Result> Insert(T rootAggregate);
+        Result<List<T>> GetDetachedFromDatabase(Predicate<T> predicate = null);
     }
 }
