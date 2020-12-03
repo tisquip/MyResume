@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
+using Resume.Application;
 using Resume.Application.ViewModels;
 using Resume.Domain;
 using Resume.Server.Data.Repositories;
@@ -45,7 +46,7 @@ namespace Resume.Server.Services
             try
             {
                 timerPopulateNewSeason = new Timer(PopulateNewSeason, null, TimeSpan.Zero, TimeSpan.FromDays(20));
-                timerLiveMatch = new Timer(LiveMatchResults, null, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(3));
+                timerLiveMatch = new Timer(LiveMatchResults, null, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(15));
             }
             catch (Exception ex)
             {
@@ -139,7 +140,7 @@ namespace Resume.Server.Services
             if (liveMatchStats != null && currentFootballMatch != null)
             {
                 LiveMatchViewModel liveMatchViewModel = new LiveMatchViewModel(currentFootballMatch, liveMatchStats);
-                await hubContextMatchHub.Clients.All.SendAsync("SendMatchUpdate", liveMatchViewModel.SerializeToJson());
+                await hubContextMatchHub.Clients.All.SendAsync(Variables.SignalRMethodName_LiveMatch, liveMatchViewModel.SerializeToJson());
             }
         }
 

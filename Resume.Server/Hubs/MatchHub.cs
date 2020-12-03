@@ -8,7 +8,6 @@ namespace Resume.Server.Hubs
     {
         public async Task SendMatchUpdate(string jsLiveMatchStats)
         {
-
             await Clients.All.SendAsync(Variables.SignalRMethodName_LiveMatch, jsLiveMatchStats);
         }
 
