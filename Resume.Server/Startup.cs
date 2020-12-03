@@ -56,7 +56,8 @@ namespace Resume.Server
 
             services.AddHttpClient<SportDataApiFootballWorkerService>();
 
-            services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();
+            //services.AddSingleton<IFootBallWorker, SportDataApiFootballWorkerService>();
+            services.AddSingleton<IFootBallWorker, MockFootballWorker>();
 
             services.AddHostedService<BackgroundFootballService>();
 

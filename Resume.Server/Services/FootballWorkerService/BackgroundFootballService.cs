@@ -6,6 +6,7 @@ using Resume.Server.Data.Repositories;
 using Resume.Server.Hubs;
 using Resume.Server.Services.ExceptionNotifierServices;
 using Resume.Server.Services.FootballWorkerService;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Resume.Server.Services
             try
             {
                 timerPopulateNewSeason = new Timer(PopulateNewSeason, null, TimeSpan.Zero, TimeSpan.FromDays(20));
-                timerLiveMatch = new Timer(LiveMatchResults, null, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(30));
+                timerLiveMatch = new Timer(LiveMatchResults, null, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(3));
             }
             catch (Exception ex)
             {
@@ -77,7 +78,7 @@ namespace Resume.Server.Services
                         if (matchesForLiveBroadcast?.Any() ?? false)
                         {
                             matchesForLiveBroadcast = matchesForLiveBroadcast.OrderBy(m => m.TimeOfMatch).ToList();
-                            currentFootballMatch = matchesForLiveBroadcast.FirstOrDefault(m => m.TimeOfMatchPlus5Hours > DateTime.UtcNow);
+                            currentFootballMatch = matchesForLiveBroadcast.FirstOrDefault(m => m.TimeOfMatchPlus5Hours > DateTime.UtcNow && m.FullTimeMatchStats == null);
                         }
                     }
 
@@ -86,6 +87,7 @@ namespace Resume.Server.Services
                         var response = await footBallWorker.GetLiveDataForMatch(currentFootballMatch.MatchId);
                         if (response.Succeeded)
                         {
+                            Log.Logger.Information("{@response}", response.ReturnedObject);
                             await SendMatchUpdate(response.ReturnedObject);
                             await CheckIfGameIsOverAndSetFinalResultIfNecessary(response.ReturnedObject);
                         }

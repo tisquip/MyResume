@@ -2,7 +2,6 @@
 using Resume.Domain;
 using Resume.Domain.Response;
 using Resume.Server.Services.FootballWorkerService.Models;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +52,6 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
             {
                 throw;
             }
-            Log.Logger.Information("result: {@result}", vtr);
             return vtr;
         }
 
@@ -84,7 +82,6 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
                 else
                 {
                     var liveMatchStatsFromApi = sportDataApiResponse_GetLiveDataForMatch.data;
-                    Log.Logger.Information("Live: {@livedata}", liveMatchStatsFromApi);
                     var goalsNormalAndExtraTime = GetScoreExludingPenaltyScore(liveMatchStatsFromApi.stats);
                     var penaltyGoals = GetGoalsFromStringResult(liveMatchStatsFromApi.stats?.ps_score);
 
