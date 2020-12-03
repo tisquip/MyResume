@@ -68,7 +68,14 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
             {
                 string url = $"{urlBaseSportDataApi}matches/{matchId}?apikey={apiKey}";
 
-                var sportDataApiResponse_GetLiveDataForMatch = await httpClient.GetFromJsonAsync<SportDataApiResponse_GetLiveDataForMatch_Alt>(url);
+                SportDataApiResponse_GetLiveDataForMatch_Alt sportDataApiResponse_GetLiveDataForMatch = null; //
+                var httpResponse = await httpClient.GetAsync(url);
+                if (httpResponse.IsSuccessStatusCode)
+                {
+                    string content = await httpResponse.Content.ReadAsStringAsync();
+                    sportDataApiResponse_GetLiveDataForMatch = Newtonsoft.Json.JsonConvert.DeserializeObject<SportDataApiResponse_GetLiveDataForMatch_Alt>(content);
+                }
+
 
                 if (sportDataApiResponse_GetLiveDataForMatch?.data == null)
                 {
@@ -82,13 +89,13 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
                     var penaltyGoals = GetGoalsFromStringResult(liveMatchStatsFromApi.stats?.ps_score);
 
 
-                    LiveMatchStats liveMatchStats = 
+                    LiveMatchStats liveMatchStats =
                         new LiveMatchStats(liveMatchStatsFromApi.match_id.ToString(), goalsNormalAndExtraTime.HomeGoals, goalsNormalAndExtraTime.AwayGoals, penaltyGoals.HomeGoals, penaltyGoals.AwayGoals, GetMatchStatus(liveMatchStatsFromApi), liveMatchStatsFromApi.minute.ToString());
-                    
+
                     vtr.SetSuccessObject(liveMatchStats);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -256,11 +263,11 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetCurrentSeason_Data
     {
-        public int season_id { get; set; }
+        public int? season_id { get; set; }
         public string name { get; set; }
-        public int is_current { get; set; }
-        public int country_id { get; set; }
-        public int league_id { get; set; }
+        public int? is_current { get; set; }
+        public int? country_id { get; set; }
+        public int? league_id { get; set; }
         public string start_date { get; set; }
         public string end_date { get; set; }
     }
@@ -282,13 +289,13 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetMatchesForSeason_Data
     {
-        public int match_id { get; set; }
-        public int status_code { get; set; }
+        public int? match_id { get; set; }
+        public int? status_code { get; set; }
         public string status { get; set; }
         public string match_start { get; set; }
         public int? minute { get; set; }
-        public int league_id { get; set; }
-        public int season_id { get; set; }
+        public int? league_id { get; set; }
+        public int? season_id { get; set; }
         public Round round { get; set; }
         public int? referee_id { get; set; }
         public SportDataApiResponse_GetMatchesForSeason_Home_Team home_team { get; set; }
@@ -299,14 +306,14 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class Round
     {
-        public int round_id { get; set; }
+        public int? round_id { get; set; }
         public string name { get; set; }
         public int? is_current { get; set; }
     }
 
     public class SportDataApiResponse_GetMatchesForSeason_Home_Team
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string name { get; set; }
         public string short_code { get; set; }
         public string logo { get; set; }
@@ -315,7 +322,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetMatchesForSeason_Country
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }
@@ -323,7 +330,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetMatchesForSeason_Away_Team
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string name { get; set; }
         public string short_code { get; set; }
         public string logo { get; set; }
@@ -332,7 +339,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetMatchesForSeason_Country1
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }
@@ -340,8 +347,8 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class Stats
     {
-        public int home_score { get; set; }
-        public int away_score { get; set; }
+        public int? home_score { get; set; }
+        public int? away_score { get; set; }
         public string ht_score { get; set; }
         public string ft_score { get; set; }
         public object et_score { get; set; }
@@ -350,11 +357,11 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class Venue
     {
-        public int venue_id { get; set; }
+        public int? venue_id { get; set; }
         public string name { get; set; }
-        public int capacity { get; set; }
+        public int? capacity { get; set; }
         public string city { get; set; }
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
     }
 
 
@@ -375,7 +382,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetTeam_Data
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string name { get; set; }
         public string short_code { get; set; }
         public string logo { get; set; }
@@ -384,7 +391,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetTeam_Country
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }
@@ -392,7 +399,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     #endregion
 
-   
+
 
     #region Response fromGetLiveDataForMatch
 
@@ -409,14 +416,14 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Data
     {
-        public int match_id { get; set; }
-        public int league_id { get; set; }
+        public int? match_id { get; set; }
+        public int? league_id { get; set; }
         public SportDataApiResponse_GetLiveDataForMatch_Alt_Round round { get; set; }
-        public int referee_id { get; set; }
-        public int season_id { get; set; }
-        public int status_code { get; set; }
+        public int? referee_id { get; set; }
+        public int? season_id { get; set; }
+        public int? status_code { get; set; }
         public string match_start { get; set; }
-        public int minute { get; set; }
+        public int? minute { get; set; }
         public string status { get; set; }
         public SportDataApiResponse_GetLiveDataForMatch_Alt_Stats stats { get; set; }
         public SportDataApiResponse_GetLiveDataForMatch_Alt_Home_Team home_team { get; set; }
@@ -429,9 +436,9 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Round
     {
-        public int round_id { get; set; }
+        public int? round_id { get; set; }
         public string name { get; set; }
-        public int is_current { get; set; }
+        public int? is_current { get; set; }
     }
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Stats
@@ -444,7 +451,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Home_Team
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string name { get; set; }
         public string short_code { get; set; }
         public string logo { get; set; }
@@ -453,7 +460,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Country
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }
@@ -461,7 +468,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Away_Team
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string name { get; set; }
         public string short_code { get; set; }
         public string logo { get; set; }
@@ -470,7 +477,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Country1
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }
@@ -478,22 +485,22 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Venue
     {
-        public int venue_id { get; set; }
+        public int? venue_id { get; set; }
         public string name { get; set; }
-        public int capacity { get; set; }
+        public int? capacity { get; set; }
         public string city { get; set; }
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
     }
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Match_Events
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string type { get; set; }
-        public int player_id { get; set; }
+        public int? player_id { get; set; }
         public string player_name { get; set; }
-        public object related_player_id { get; set; }
+        public int? related_player_id { get; set; }
         public string related_player_name { get; set; }
-        public int minute { get; set; }
+        public int? minute { get; set; }
         public object extra_minute { get; set; }
         public object reason { get; set; }
         public object injured { get; set; }
@@ -504,44 +511,44 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Match_Statistics
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string team_name { get; set; }
-        public int fouls { get; set; }
-        public int injuries { get; set; }
-        public int corners { get; set; }
-        public int offsides { get; set; }
-        public int shots_total { get; set; }
-        public int shots_on_target { get; set; }
-        public int shots_off_target { get; set; }
-        public int shots_blocked { get; set; }
+        public int? fouls { get; set; }
+        public int? injuries { get; set; }
+        public int? corners { get; set; }
+        public int? offsides { get; set; }
+        public int? shots_total { get; set; }
+        public int? shots_on_target { get; set; }
+        public int? shots_off_target { get; set; }
+        public int? shots_blocked { get; set; }
         public object possessiontime { get; set; }
         public object possessionpercent { get; set; }
-        public int yellowcards { get; set; }
-        public int yellowredcards { get; set; }
-        public int redcards { get; set; }
-        public int substitutions { get; set; }
-        public int goal_kick { get; set; }
-        public int goal_attempts { get; set; }
-        public int free_kick { get; set; }
-        public int throw_in { get; set; }
-        public int ball_safe { get; set; }
-        public int goals { get; set; }
-        public int penalties { get; set; }
-        public int attacks { get; set; }
-        public int dangerous_attacks { get; set; }
+        public int? yellowcards { get; set; }
+        public int? yellowredcards { get; set; }
+        public int? redcards { get; set; }
+        public int? substitutions { get; set; }
+        public int? goal_kick { get; set; }
+        public int? goal_attempts { get; set; }
+        public int? free_kick { get; set; }
+        public int? throw_in { get; set; }
+        public int? ball_safe { get; set; }
+        public int? goals { get; set; }
+        public int? penalties { get; set; }
+        public int? attacks { get; set; }
+        public int? dangerous_attacks { get; set; }
     }
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Lineup
     {
-        public int team_id { get; set; }
+        public int? team_id { get; set; }
         public string formation { get; set; }
-        public int formation_confirmed { get; set; }
+        public int? formation_confirmed { get; set; }
         public SportDataApiResponse_GetLiveDataForMatch_Alt_Player[] players { get; set; }
     }
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Player
     {
-        public int player_id { get; set; }
+        public int? player_id { get; set; }
         public string firstname { get; set; }
         public string lastname { get; set; }
         public string birthday { get; set; }
@@ -554,7 +561,7 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
 
     public class SportDataApiResponse_GetLiveDataForMatch_Alt_Country2
     {
-        public int country_id { get; set; }
+        public int? country_id { get; set; }
         public string name { get; set; }
         public string country_code { get; set; }
         public string continent { get; set; }

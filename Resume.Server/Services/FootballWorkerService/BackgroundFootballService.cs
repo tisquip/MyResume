@@ -1,16 +1,11 @@
-﻿using Data;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Resume.Application.ViewModels;
 using Resume.Domain;
-using Resume.Domain.Interfaces;
-using Resume.Server.Data;
 using Resume.Server.Data.Repositories;
 using Resume.Server.Hubs;
 using Resume.Server.Services.ExceptionNotifierServices;
 using Resume.Server.Services.FootballWorkerService;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,11 +43,13 @@ namespace Resume.Server.Services
         {
             try
             {
-                timerPopulateNewSeason = new Timer(LiveMatchResults, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+                timerPopulateNewSeason = new Timer(PopulateNewSeason, null, TimeSpan.Zero, TimeSpan.FromDays(20));
+                timerLiveMatch = new Timer(LiveMatchResults, null, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(30));
             }
             catch (Exception ex)
             {
                 await exceptionNotifier.Notify(ex);
+                DisposeAll();
             }
         }
 
@@ -63,6 +60,7 @@ namespace Resume.Server.Services
         }
 
         bool isProcessingMatch = false;
+        FootBallMatch currentFootballMatch;
         public async void LiveMatchResults(object state)
         {
             if (!isProcessingMatch)
@@ -70,12 +68,27 @@ namespace Resume.Server.Services
                 isProcessingMatch = true;
                 try
                 {
-                    
-                    string barcelonaChampionsLeagueMatchId = "237668";
-                    var response = await footBallWorker.GetLiveDataForMatch(barcelonaChampionsLeagueMatchId);
-                    if (response.Succeeded)
+                    await SetPreviouslyPlayedGameResults();
+
+                    if (currentFootballMatch == null || currentFootballMatch.TimeOfMatchPlus5Hours < DateTime.Now)
                     {
-                        await SendMatchUpdate(response.ReturnedObject);
+                        currentFootballMatch = null;
+
+                        if (matchesForLiveBroadcast?.Any() ?? false)
+                        {
+                            matchesForLiveBroadcast = matchesForLiveBroadcast.OrderBy(m => m.TimeOfMatch).ToList();
+                            currentFootballMatch = matchesForLiveBroadcast.FirstOrDefault(m => m.TimeOfMatchPlus5Hours > DateTime.UtcNow);
+                        }
+                    }
+
+                    if (currentFootballMatch != null && currentFootballMatch.FullTimeMatchStats == null && currentFootballMatch.TimeOfMatch <= DateTime.UtcNow)
+                    {
+                        var response = await footBallWorker.GetLiveDataForMatch(currentFootballMatch.MatchId);
+                        if (response.Succeeded)
+                        {
+                            await SendMatchUpdate(response.ReturnedObject);
+                            await CheckIfGameIsOverAndSetFinalResultIfNecessary(response.ReturnedObject);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -89,82 +102,91 @@ namespace Resume.Server.Services
             }
         }
 
+        private async Task CheckIfGameIsOverAndSetFinalResultIfNecessary(LiveMatchStats liveMatchStats)
+        {
+            if (liveMatchStats != null && (liveMatchStats.MatchStatus == MatchStatus.ApiCancelled || liveMatchStats.MatchStatus == MatchStatus.FullTime))
+            {
+                var arsenal = GetArsernal();
+                var resultFullTimeSave = await arsenal.AddFullTimeLiveMatchStats(exceptionNotifier, rootAggregateRepositorySingletonFootballTeams, liveMatchStats);
+
+                if (resultFullTimeSave.Succeeded)
+                {
+                    matchesForLiveBroadcast = arsenal.JSListOfFootBallMatch_Matches.DeserializeFromJson<List<FootBallMatch>>();
+                    currentFootballMatch = null;
+                }
+            }
+        }
+
+        private async Task SetPreviouslyPlayedGameResults()
+        {
+            Predicate<FootBallMatch> previouslyPlayedGamesWithoutResults = (f) => f.FullTimeMatchStats == null && f.TimeOfMatchPlus5Hours < DateTime.UtcNow;
+            if (matchesForLiveBroadcast?.Any(m => previouslyPlayedGamesWithoutResults(m)) ?? false)
+            {
+                List<string> matchIdsWithUnfinishedGames = matchesForLiveBroadcast.Where(m => previouslyPlayedGamesWithoutResults(m)).Select(m => m.MatchId).ToList();
+              
+                foreach (var matchId in matchIdsWithUnfinishedGames)
+                {
+                    var result = await footBallWorker.GetLiveDataForMatch(matchId);
+                    await CheckIfGameIsOverAndSetFinalResultIfNecessary(result?.ReturnedObject);
+                }
+            }
+        }
+
         public async Task SendMatchUpdate(LiveMatchStats liveMatchStats)
         {
-            
-            if (liveMatchStats != null)
+            if (liveMatchStats != null && currentFootballMatch != null)
             {
-                FootBallMatch footBallMatch = matchesForLiveBroadcast.FirstOrDefault(f => f.MatchId == liveMatchStats.MatchId);
-
-                footBallMatch = new FootBallMatch(237668.ToString(), DateTime.UtcNow, "Ferencvarosi TC", 3462.ToString(), "https://cdn.sportdataapi.com/images/soccer/teams/100/66.png", "FC Barcelona", 6404.ToString(), "https://cdn.sportdataapi.com/images/soccer/teams/100/99.png", "Groupama Arena", "Budapest");
-
-                if (footBallMatch != null)
-                {
-                    LiveMatchViewModel liveMatchViewModel = new LiveMatchViewModel(footBallMatch, liveMatchStats);
-
-                    
-                    await hubContextMatchHub.Clients.All.SendAsync("SendMatchUpdate", liveMatchViewModel.SerializeToJson());
-                }
-                
+                LiveMatchViewModel liveMatchViewModel = new LiveMatchViewModel(currentFootballMatch, liveMatchStats);
+                await hubContextMatchHub.Clients.All.SendAsync("SendMatchUpdate", liveMatchViewModel.SerializeToJson());
             }
         }
 
 
-        bool isProcessing = false;
-        
         private async void PopulateNewSeason(object state)
         {
-            if (!isProcessing)
+            try
             {
-                try
+                var resultCurrentSeason = await footBallWorker.GetCurrentSeason(englishPremierLeagueId);
+                FootballTeam arsernal = GetArsernal();
+                if (arsernal == null)
                 {
-                    isProcessing = true;
-                    var resultCurrentSeason = await footBallWorker.GetCurrentSeason(englishPremierLeagueId);
-                    FootballTeam arsernal = GetArsernal();
-                    if (arsernal == null)
+                    var resultOfTeam = await footBallWorker.GetTeam(arsenalId);
+                    if (resultOfTeam.Succeeded)
                     {
-                        var resultOfTeam = await footBallWorker.GetTeam(arsenalId);
-                        if (resultOfTeam.Succeeded)
-                        {
-                            arsernal = resultOfTeam.ReturnedObject;
-                            await rootAggregateRepositorySingletonFootballTeams.Insert(arsernal);
-                        }
+                        arsernal = resultOfTeam.ReturnedObject;
+                        await rootAggregateRepositorySingletonFootballTeams.Insert(arsernal);
                     }
+                }
 
-                    matchesForLiveBroadcast = arsernal?.JSListOfFootBallMatch_Matches?.DeserializeFromJson<List<FootBallMatch>>() ?? new List<FootBallMatch>();
+                matchesForLiveBroadcast = arsernal?.JSListOfFootBallMatch_Matches?.DeserializeFromJson<List<FootBallMatch>>() ?? new List<FootBallMatch>();
 
-                    if ((resultCurrentSeason?.ReturnedObject?.IsCurrent ?? false)
-                        && !resultCurrentSeason.ReturnedObject.SeasonId.Equals(arsernal?.SeasonIdForFootballMatches ?? "", StringComparison.OrdinalIgnoreCase))
+                if ((resultCurrentSeason?.ReturnedObject?.IsCurrent ?? false)
+                    && resultCurrentSeason.ReturnedObject.SeasonId != arsernal?.SeasonIdForFootballMatches)
+                {
+                    string newSeasonId = resultCurrentSeason.ReturnedObject.SeasonId;
+                    var resultMatches = await footBallWorker.GetMatchesForSeason(newSeasonId);
+
+                    if (resultMatches.ReturnedObject?.Any() ?? false)
                     {
-                        string newSeasonId = resultCurrentSeason.ReturnedObject.SeasonId;
-                        var resultMatches = await footBallWorker.GetMatchesForSeason(newSeasonId);
-
-                        if (resultMatches.ReturnedObject?.Any() ?? false)
+                        List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
+                        if (matchesWhereArsenalIsPlaying?.Any() ?? false)
                         {
-                            List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
-                            if (matchesWhereArsenalIsPlaying?.Any() ?? false)
-                            {
-                                var insertResult = await arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositorySingletonFootballTeams, newSeasonId, matchesWhereArsenalIsPlaying);
+                            var insertResult = await arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositorySingletonFootballTeams, newSeasonId, matchesWhereArsenalIsPlaying);
 
-                                if (insertResult.Succeeded)
-                                {
-                                    matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
-                                    timerPopulateNewSeason.Change((int)TimeSpan.FromDays(20).TotalMilliseconds, 0);
-                                }
+                            if (insertResult.Succeeded)
+                            {
+                                matchesForLiveBroadcast = matchesWhereArsenalIsPlaying;
                             }
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    await exceptionNotifier.Notify(ex);
-                }
-                finally
-                {
-                    isProcessing = false;
-                }
+
+
             }
-           
+            catch (Exception ex)
+            {
+                await exceptionNotifier.Notify(ex);
+            }
         }
 
         FootballTeam GetArsernal()
@@ -172,14 +194,10 @@ namespace Resume.Server.Services
             return rootAggregateRepositorySingletonFootballTeams.GetDetachedFromDatabase(t => t.TeamId == arsenalId)?.ReturnedObject?.FirstOrDefault();
         }
 
-       
-
         public void Dispose()
         {
             DisposeAll();
         }
-
-
 
         private void DisposeAll()
         {

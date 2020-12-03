@@ -13,6 +13,7 @@ namespace Resume.Domain
         public string SignalRBroadcastId => MatchId.ToString();
         public string MatchId { get; set; }
         public DateTime TimeOfMatch { get; set; }
+        public DateTime TimeOfMatchPlus5Hours { get; set; }
         public string HomeTeamName { get; set; }
         public string HomeTeamId { get; set; }
         public string HomeTeamLogoUrl { get; set; }
@@ -31,6 +32,7 @@ namespace Resume.Domain
         {
             MatchId = matchId;
             TimeOfMatch = timeOfMatch;
+            TimeOfMatchPlus5Hours = TimeOfMatch + TimeSpan.FromHours(5);
             HomeTeamName = homeTeamName;
             HomeTeamId = homeTeamId;
             HomeTeamLogoUrl = homeTeamLogoUrl;
@@ -39,6 +41,7 @@ namespace Resume.Domain
             AwayTeamLogoUrl = awayTeamLogoUrl;
             VenueName = venueName ?? "TBA";
             VenueCity = venueCity ?? "TBA";
+
         }
 
         protected override bool EqualsCore(FootBallMatch other)
