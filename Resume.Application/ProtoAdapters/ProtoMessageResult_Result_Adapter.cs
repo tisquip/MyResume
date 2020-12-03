@@ -29,23 +29,19 @@ namespace Resume.Application.ProtoAdapters
             return vtr;
         }
 
-        public static ProtoMessageResult Map(Result result)
+        public static Result Map(ProtoMessageResult protoMessageResult)
         {
-            if (result == null)
+            Result vtr = new Result();
+            if (protoMessageResult == null)
             {
-                result = new Result();
-                result.SetError("Failed to map to proto type because the argument supplied to the adapter was null");
+                vtr.SetError("Failed to map to result from proto type because the argument supplied to the adapter was null");
+            }
+            vtr.Succeeded = protoMessageResult.Succeeded;
+            if (protoMessageResult.Messages?.Any() ?? false)
+            {
+                vtr.Messages.AddRange(protoMessageResult.Messages);
             }
 
-            ProtoMessageResult vtr = new ProtoMessageResult()
-            {
-                Succeeded = result.Succeeded
-            };
-
-            if (result?.Messages?.Any() ?? false)
-            {
-                vtr.Messages.AddRange(result.Messages);
-            }
             return vtr;
         }
     }
