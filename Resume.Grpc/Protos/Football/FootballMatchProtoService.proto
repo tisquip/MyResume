@@ -1,0 +1,34 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Resume.Grpc.Protos.Football";
+
+package footballMatchProtoServicesProtoPackage;
+
+service FootballMatchProtoServicesProto{
+	rpc RequestMatchesForTeam (ProtoMessageRequestMatches) returns (ProtoMessageLiveMatchViewModel);
+}
+
+message ProtoMessageRequestMatches{
+	string teamId = 1;
+}
+
+message ProtoMessageResult{
+	bool succeeded = 1;
+	reapeated string messages = 2;
+}
+
+message ProtoMessageLiveMatchViewModel{
+	ProtoMessageResult result = 1;
+	string MatchId = 2;
+	string HomeTeamName = 3;
+	string HomeTeamLogo = 4;
+	string AwayTeamName = 5;
+	string AwayTeamLogo = 6;
+	int GoalsHomeTeam = 7;
+	int GoalsAwayTeam = 8;
+	int PenaltiesScoredHomeTeam = 9;
+	int PenaltiesScoredAwayTeam = 10;
+	string MatchStatus = 11;
+	string Minute = 12;
+}
+
