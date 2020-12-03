@@ -1,20 +1,26 @@
 ﻿@using Resume.Application.ViewModels
 @implements IDisposable
 
-<div class="row">
-    <div class="col-md-12 text-center">
-        <p>@liveMatchViewModel.Minute</p>
+@if (liveMatchViewModel == null)
+{
+    <p>No Match</p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <p>@liveMatchViewModel.Minute</p>
+        </div>
+        <div class="col-md-6 text-right">
+            <p>@homeTeamName <img class="kt-teamlogo" src="@homeTeamLogo" /></p>
+            <p>@liveMatchViewModel.GoalsHomeTeam</p>
+        </div>
+        <div class="col-md-6 text-left">
+            <p><img class="kt-teamlogo" src="@awayTeamLogo" />@awayTeamName </p>
+            <p>@liveMatchViewModel.GoalsHomeTeam</p>
+        </div>
     </div>
-    <div class="col-md-6 text-right">
-        <p>@homeTeamName <img class="kt-teamlogo" src="@homeTeamLogo" /></p>
-        <p>@liveMatchViewModel.GoalsHomeTeam</p>
-    </div>
-    <div class="col-md-6 text-left">
-        <p><img class="kt-teamlogo" src="@awayTeamLogo" />@awayTeamName </p>
-        <p>@liveMatchViewModel.GoalsHomeTeam</p>
-    </div>
-</div>
-
+}
 
 
 @code {

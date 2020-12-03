@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Resume.Application;
 using Resume.Application.ViewModels;
+using Resume.Domain;
 using System;
 using System.Threading.Tasks;
-using Resume.Domain;
 
 namespace Resume.Web.Services
 {

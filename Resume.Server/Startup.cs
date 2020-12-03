@@ -31,7 +31,7 @@ namespace Resume.Server
             Configuration = configuration;
             Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(Configuration).CreateLogger();
         }
-
+        string corsAllowAll = "AllowAll";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -62,6 +62,17 @@ namespace Resume.Server
             services.AddHostedService<BackgroundFootballService>();
 
             services.AddSignalR();
+
+            services.AddCors((config) =>
+            {
+                config.AddPolicy(corsAllowAll, (builder) =>
+                {
+                    builder.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .Build();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -77,6 +88,8 @@ namespace Resume.Server
             }
 
             app.UseStaticFiles();
+
+            app.UseCors(corsAllowAll);
 
             app.UseRouting();
 
