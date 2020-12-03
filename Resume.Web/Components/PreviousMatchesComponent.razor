@@ -1,9 +1,43 @@
-﻿<h3>Previous Matches</h3>
-<ol>
-    <li>Match 1</li>
-    <li>Match 2</li>
-    <li>Match 3</li>
-</ol>
+﻿@using Resume.Grpc
+@using Resume.Application.ViewModels
+
+<h3>Previous Matches</h3>
+
+@if (isLoading)
+{
+    <LoaderComponent />
+}
+
+@if (previousGames.Count > 0)
+{
+    foreach (var liveGameViewModel in previousGames)
+    {
+        <Resume.Web.Components.LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponent Options="new LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponentOptions(liveGameViewModel)" />
+    }
+}
+
 @code {
+    List<LiveMatchViewModel> previousGames = new List<LiveMatchViewModel>();
+    bool isLoading = true;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            _ = GetPreviousGames();
+        }
+    }
+
+    async Task GetPreviousGames()
+    {
+        isLoading = true;
+        previousGames = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
+        isLoading = false;
+        if (previousGames.Any())
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 
 }

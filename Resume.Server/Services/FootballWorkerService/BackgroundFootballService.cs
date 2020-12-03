@@ -24,7 +24,6 @@ namespace Resume.Server.Services
         IExceptionNotifierSingleton exceptionNotifier;
         #region Cheating
         //Because its a sample, and the api key can only afford 500 calls free per month, limitation is going to be on asernal team, my wifes favorite, and the english premier league. These id's are limited to the SportDataApi service. I did not want to restrict the actual footballWorker to those id's from within the class itself, I wanted it to be from the client (this), so that its getting exactly what its calling for and it know this - the ids themselves cause this class to be coupled, in a different world, it might be best to place them in a config file, so it can be changed easily if the IFootBallWorker is changed or was dynamically despatched 
-        string arsenalId = "2522";
         string englishPremierLeagueId = "237";
         #endregion
 
@@ -153,7 +152,7 @@ namespace Resume.Server.Services
                 FootballTeam arsernal = GetArsernal();
                 if (arsernal == null)
                 {
-                    var resultOfTeam = await footBallWorker.GetTeam(arsenalId);
+                    var resultOfTeam = await footBallWorker.GetTeam(Variables.ArsenalTeamId);
                     if (resultOfTeam.Succeeded)
                     {
                         arsernal = resultOfTeam.ReturnedObject;
@@ -171,7 +170,7 @@ namespace Resume.Server.Services
 
                     if (resultMatches.ReturnedObject?.Any() ?? false)
                     {
-                        List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == arsenalId || m.AwayTeamId == arsenalId).OrderBy(m => m.TimeOfMatch).ToList();
+                        List<FootBallMatch> matchesWhereArsenalIsPlaying = resultMatches.ReturnedObject.Where(m => m.HomeTeamId == Variables.ArsenalTeamId || m.AwayTeamId == Variables.ArsenalTeamId).OrderBy(m => m.TimeOfMatch).ToList();
                         if (matchesWhereArsenalIsPlaying?.Any() ?? false)
                         {
                             var insertResult = await arsernal.InsertNewMatchesForSeason(exceptionNotifier, rootAggregateRepositorySingletonFootballTeams, newSeasonId, matchesWhereArsenalIsPlaying);
@@ -194,7 +193,7 @@ namespace Resume.Server.Services
 
         FootballTeam GetArsernal()
         {
-            return rootAggregateRepositorySingletonFootballTeams.GetDetachedFromDatabase(t => t.TeamId == arsenalId)?.ReturnedObject?.FirstOrDefault();
+            return rootAggregateRepositorySingletonFootballTeams.GetDetachedFromDatabase(t => t.TeamId == Variables.ArsenalTeamId)?.ReturnedObject?.FirstOrDefault();
         }
 
         public void Dispose()
