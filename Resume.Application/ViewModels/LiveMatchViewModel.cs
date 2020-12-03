@@ -49,5 +49,21 @@ namespace Resume.Application.ViewModels
             PenaltiesScoredAwayTeam = liveMatchStats.PenaltiesScoredAwaySide;
             PenaltiesScoredHomeTeam = liveMatchStats.PenaltiesScoredHomeSide;
         }
+
+        public LiveMatchViewModel(FootBallMatch footBallMatch)
+        {
+            AwayTeamLogo = footBallMatch.AwayTeamLogoUrl;
+            HomeTeamLogo = footBallMatch.HomeTeamLogoUrl;
+            AwayTeamName = footBallMatch.AwayTeamName;
+            HomeTeamName = footBallMatch.HomeTeamName;
+
+            GoalsAwayTeam = footBallMatch.FullTimeMatchStats?.GoalsScoredAwaySide ?? 0;
+            GoalsHomeTeam = footBallMatch.FullTimeMatchStats?.GoalsScoredHomeSide ?? 0;
+            MatchId = footBallMatch.MatchId;
+            MatchStatus = footBallMatch.FullTimeMatchStats?.MatchStatus.ToString() ?? Domain.MatchStatus.NotStarted.ToString();
+            Minute = footBallMatch?.FullTimeMatchStats?.Minute ?? "0";
+            PenaltiesScoredAwayTeam = footBallMatch?.FullTimeMatchStats?.PenaltiesScoredAwaySide ?? 0;
+            PenaltiesScoredHomeTeam = footBallMatch?.FullTimeMatchStats?.PenaltiesScoredHomeSide ?? 0;
+        }
     }
 }

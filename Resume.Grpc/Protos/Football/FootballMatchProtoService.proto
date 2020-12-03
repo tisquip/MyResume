@@ -5,7 +5,7 @@ option csharp_namespace = "Resume.Grpc.Protos.Football";
 package footballMatchProtoServicesProtoPackage;
 
 service FootballMatchProtoServicesProto{
-	rpc RequestMatchesForTeam (ProtoMessageRequestMatches) returns (ProtoMessageLiveMatchViewModel);
+	rpc RequestMatchesForTeam (ProtoMessageRequestMatches) returns (ProtoMessageResponseResultOfListOfLiveMatchViewModel);
 }
 
 message ProtoMessageRequestMatches{
@@ -14,21 +14,25 @@ message ProtoMessageRequestMatches{
 
 message ProtoMessageResult{
 	bool succeeded = 1;
-	reapeated string messages = 2;
+	repeated string messages = 2;
 }
 
 message ProtoMessageLiveMatchViewModel{
+	string MatchId = 1;
+	string HomeTeamName = 2;
+	string HomeTeamLogo = 3;
+	string AwayTeamName = 4;
+	string AwayTeamLogo = 5;
+	int32 GoalsHomeTeam = 6;
+	int32 GoalsAwayTeam = 7;
+	int32 PenaltiesScoredHomeTeam = 8;
+	int32 PenaltiesScoredAwayTeam = 9;
+	string MatchStatus = 10;
+	string Minute = 11;
+}
+
+message ProtoMessageResponseResultOfListOfLiveMatchViewModel{
 	ProtoMessageResult result = 1;
-	string MatchId = 2;
-	string HomeTeamName = 3;
-	string HomeTeamLogo = 4;
-	string AwayTeamName = 5;
-	string AwayTeamLogo = 6;
-	int GoalsHomeTeam = 7;
-	int GoalsAwayTeam = 8;
-	int PenaltiesScoredHomeTeam = 9;
-	int PenaltiesScoredAwayTeam = 10;
-	string MatchStatus = 11;
-	string Minute = 12;
+	repeated ProtoMessageLiveMatchViewModel listOfLiveMatchViewModel = 2;
 }
 

@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Resume.Domain\Resume.Domain.csproj" />
+    <ProjectReference Include="..\Resume.Grpc\Resume.Grpc.csproj" />
   </ItemGroup>
 
 </Project>

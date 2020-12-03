@@ -21,6 +21,8 @@ using Resume.Server.Data.Repositories;
 using Resume.Domain;
 using Resume.Server.Hubs;
 using Resume.Application;
+using MediatR;
+using System.Reflection;
 
 namespace Resume.Server
 {
@@ -44,6 +46,8 @@ namespace Resume.Server
 
             services.AddDbContext<ResumeBackgroundServiceDbContext>(options =>
                    options.UseSqlServer(Configuration.GetConnectionString("ResumeDbContext")), ServiceLifetime.Singleton);
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddScoped<IEmailServiceScoped, SendGridEmailServiceScoped>();
             services.AddSingleton<IEmailServiceSingleton, SendGridEmailServiceSingleton>();
