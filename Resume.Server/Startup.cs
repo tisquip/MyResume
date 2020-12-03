@@ -23,6 +23,7 @@ using Resume.Server.Hubs;
 using Resume.Application;
 using MediatR;
 using System.Reflection;
+using Resume.Server.ProtoServer.FootballMatchProtoServices;
 
 namespace Resume.Server
 {
@@ -66,6 +67,7 @@ namespace Resume.Server
             services.AddHostedService<BackgroundFootballService>();
 
             services.AddSignalR();
+            services.AddGrpc();
 
             services.AddCors((config) =>
             {
@@ -93,9 +95,10 @@ namespace Resume.Server
 
             app.UseStaticFiles();
 
-            app.UseCors(corsAllowAll);
-
             app.UseRouting();
+
+            app.UseGrpcWeb();
+            app.UseCors(corsAllowAll);
 
             app.UseAuthorization();
 
@@ -103,6 +106,7 @@ namespace Resume.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapHub<MatchHub>($"/{URLS.HubLiveMatchEnpointNameOnly_NotUrl}");
+                endpoints.MapGrpcService<FootballMatchProtoServicesProtoImplementation>().EnableGrpcWeb().RequireCors(corsAllowAll);
             });
         }
     }
