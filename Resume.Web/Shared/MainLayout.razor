@@ -1,17 +1,147 @@
 ﻿@inherits LayoutComponentBase
+<!-- Header Section Begin -->
+<header class="header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-2">
+                <div class="header__logo">
+                    <a href="/"><img src="img/logo.png" alt=""></a>
+                </div>
+            </div>
+            <div class="col-lg-10">
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+            </div>
+        </div>
+        <div id="mobile-menu-wrap"></div>
     </div>
+</header>
+<!-- Header End -->
+<!-- Hero Section Begin -->
+<section class="hero">
+    <div class="hero__slider owl-carousel">
+        <div class="hero__item set-bg" data-setbg="img/hero/coding-1853305_1920.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="hero__text">
+                            <span>For web design</span>
+                            <h2>Data driven or Simple</h2>
+                            <a class="primary-btn text-white">See more below</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero__item set-bg" data-setbg="img/hero/coding-1853305_1920.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="hero__text">
+                            <span>For mobile apps</span>
+                            <h2>Backend driven or simple</h2>
+                            <a class="primary-btn text-white">See more below</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero__item set-bg" data-setbg="img/hero/coding-1853305_1920.jpg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="hero__text">
+                            <span>For software development</span>
+                            <h2>Windows | Mac | Linux</h2>
+                            <a class="primary-btn text-white">See more below</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Hero Section End -->
+<!-- Services Section Begin -->
+<section class="services spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="services__title">
+                    <div class="section-title">
+                        <span>My services</span>
+                        <h2>What I do?</h2>
+                    </div>
+                    <p>If you need a website, software or mobile application developed, then thats my specialty. Any concept, from the ground up using the latest software development tools and practices</p>
 
-    <div class="main">
-        <div class="top-row px-4">
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+                    <div class="text-center px-3 pb-1">
+                        <img src="img/me.jpeg" class="img-fluid" />
+                    </div>
+                    <p class="text-center px-3">
+                        <i class="fa fa-phone"></i> : +263 779 741 403
+                        <br />
+                        <i class="fa fa-envelope"></i> : tisquip6@gmail.com
+                    </p>
+                    <a class="primary-btn text-white">Coding Concepts To Usable Technology</a>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="services__item">
+                            <div class="services__item__icon">
+                                <img src="img/w001-web.png" alt="">
+                            </div>
+                            <h4>Websites</h4>
+                            <p>Whether its a plain and simple static site, or whether its an advanced site to build your new innovative concept, requiring a micro service architecture and all the bells and whistles</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="services__item">
+                            <div class="services__item__icon">
+                                <img src="img/w003-programming.png" alt="">
+                            </div>
+                            <h4>Custom Software</h4>
+                            <p>Using Microsoft's latest, .Net 5 (or .Net Core) and C#, let me build your new software that runs on all major desktop computer operating systems</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="services__item">
+                            <div class="services__item__icon">
+                                <img src="img/w005-mobile-app-1.png" alt="">
+                            </div>
+                            <h4>Mobile Apps</h4>
+                            <p>Everyone is using some sort of mobile app everyday, if your company doesn't have a mobile app, then there are loads of opportunities you company may be missing</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="services__item">
+                            <div class="services__item__icon">
+                                <img src="img/w006-technology.png" alt="">
+                            </div>
+                            <h4>Technology and Patterns used</h4>
+                            <p>C#, .Net 5 and Core, Blazor, Entity Framework, GRPC, SignalR, Domain Driven Design, CQRS, Event Sourcing, Micro services Architecture</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Services Section End -->
+<!-- Footer Section Begin -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer__top">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="footer__top__logo">
+                        <a href="#"><img src="img/logo.png" alt=""></a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                </div>
+            </div>
         </div>
 
-        <div class="content px-4">
-            @Body
-        </div>
     </div>
-</div>
+</footer>

@@ -11,6 +11,18 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
+    <None Include="wwwroot\css\fonts\ElegantIcons.svg" />
+    <None Include="wwwroot\css\fonts\fontawesome-webfont.svg" />
+    <None Include="wwwroot\css\fonts\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\img\hero\coding-1853305_1920.psd" />
+    <None Include="wwwroot\js\bootstrap.min.js" />
+    <None Include="wwwroot\js\jquery-3.3.1.min.js" />
+    <None Include="wwwroot\js\jquery.magnific-popup.min.js" />
+    <None Include="wwwroot\js\jquery.slicknav.js" />
+    <None Include="wwwroot\js\main.js" />
+    <None Include="wwwroot\js\masonry.pkgd.min.js" />
+    <None Include="wwwroot\js\mixitup.min.js" />
+    <None Include="wwwroot\js\owl.carousel.min.js" />
   </ItemGroup>
 
   <ItemGroup>
