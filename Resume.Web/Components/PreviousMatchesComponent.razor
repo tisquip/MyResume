@@ -1,6 +1,8 @@
 ﻿@using Resume.Grpc
 @using Resume.Application.ViewModels
 
+@implements IDisposable
+
 <h3>Previous Matches</h3>
 
 @if (isLoading)
@@ -20,6 +22,15 @@
     List<LiveMatchViewModel> previousGames = new List<LiveMatchViewModel>();
     bool isLoading = true;
 
+    SignalRService signalRService;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        signalRService = await SignalRService.GetSignalRService();
+        signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
+        signalRService.OnLiveMatchView += OnLiveMatchViewModelRecieved;
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
@@ -37,6 +48,31 @@
         if (previousGames.Any())
         {
             await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    async void OnLiveMatchViewModelRecieved(object sender, LiveMatchViewModel liveMatchViewModel)
+    {
+        if (liveMatchViewModel.MatchStatus == Resume.Domain.MatchStatus.FullTime.ToString())
+        {
+            var liveMatchViewModelFromList = previousGames.FirstOrDefault(m => m.MatchId == liveMatchViewModel.MatchId);
+            if (liveMatchViewModelFromList != null)
+            {
+                await InvokeAsync(() =>
+                {
+                    isLoading = true;
+                    StateHasChanged();
+                });
+                await GetPreviousGames();
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (signalRService != null)
+        {
+            signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
         }
     }
 

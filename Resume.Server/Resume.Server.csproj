@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<UserSecretsId>21140ce9-0e7f-45db-9fb5-7235cec0fbc7</UserSecretsId>
+		<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 	</PropertyGroup>
 
 	<ItemGroup>
