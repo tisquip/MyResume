@@ -1,7 +1,6 @@
 ﻿@using Resume.Grpc
 @using Resume.Application.ViewModels
 @using Resume.Domain
-@using Resume.Web.Components.LiveMatchViewModelDisplay
 
 @implements IDisposable
 
@@ -19,7 +18,8 @@ else
     }
     else
     {
-        <LiveMatchViewModelDisplayComponent Options="new LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponentOptions(nextMatch)" />
+        <p class="small text-white mb-0">Total minutes left till next kickoff: @timeLeft</p>
+        <Resume.Web.Components.DisplayComponents.DisplayLiveMatchViewModelDisplayComponent Options="new DisplayComponents.DisplayLiveMatchViewModelDisplayComponentOptions(nextMatch)" />
     }
 }
 
@@ -28,6 +28,8 @@ else
 @code {
     LiveMatchViewModel nextMatch;
     bool isLoading = true;
+    string timeLeft;
+    System.Threading.Timer timer;
 
     SignalRService signalRService;
     protected override async Task OnInitializedAsync()
@@ -36,6 +38,8 @@ else
         signalRService = await SignalRService.GetSignalRService();
         signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
         signalRService.OnLiveMatchView += OnLiveMatchViewModelRecieved;
+
+        timer = new System.Threading.Timer(OnTimerElapsed, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1));
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -92,11 +96,27 @@ else
         }
     }
 
+    async void OnTimerElapsed(object state)
+    {
+        if (nextMatch != null && !isLoading)
+        {
+
+            var timeLeftSpan = nextMatch.StartTime.Subtract(DateTime.UtcNow.AddDays(-2));
+            timeLeft = $"{24 + timeLeftSpan.Hours} hrs: {60 + timeLeftSpan.Minutes} min: {60 + timeLeftSpan.Seconds} sec";
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     public void Dispose()
     {
         if (signalRService != null)
         {
             signalRService.OnLiveMatchView -= OnLiveMatchViewModelRecieved;
+        }
+
+        if (timer != null)
+        {
+            timer.Dispose();
         }
     }
 

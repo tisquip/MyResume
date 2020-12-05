@@ -17,10 +17,15 @@
 }
 else
 {
-    foreach (var liveGameViewModel in previousGames)
+
+
+    for (int i = 0; i < previousGames.Count; i++)
     {
-        <Resume.Web.Components.LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponent Options="new LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponentOptions(liveGameViewModel)" />
-        <hr class="text-white" />
+<Resume.Web.Components.DisplayComponents.DisplayLiveMatchViewModelDisplayComponent Options="new DisplayComponents.DisplayLiveMatchViewModelDisplayComponentOptions(previousGames[i])" />
+        if (i != previousGames.Count - 1)
+        {
+            <hr style="background-color: white;color: white" />
+        }
     }
 }
 

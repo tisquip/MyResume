@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Resume.Web.Components.LiveMatchViewModelDisplay
+namespace Resume.Web.Components.DisplayComponents
 {
-    public class LiveMatchViewModelDisplayComponentOptions
+    public class DisplayLiveMatchViewModelDisplayComponentOptions
     {
         public LiveMatchViewModel LiveMatchViewModel { get; set; }
-        public LiveMatchViewModelDisplayComponentOptions()
+        public DisplayLiveMatchViewModelDisplayComponentOptions()
         {
         }
 
-        public LiveMatchViewModelDisplayComponentOptions(LiveMatchViewModel liveMatchViewModel)
+        public DisplayLiveMatchViewModelDisplayComponentOptions(LiveMatchViewModel liveMatchViewModel)
         {
             LiveMatchViewModel = liveMatchViewModel;
         }

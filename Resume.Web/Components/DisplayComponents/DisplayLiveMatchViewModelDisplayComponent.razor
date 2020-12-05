@@ -1,0 +1,27 @@
+﻿@if (Options == null || Options.LiveMatchViewModel == null)
+{
+    <p>No Match To Display</p>
+}
+else
+{
+    <div class="text-center">
+        <p class="small text-center m-0">
+            Status: @Options.LiveMatchViewModel.MatchStatus | Time: @Options.LiveMatchViewModel.StartTime.ToString()
+        </p>
+        <p class="text-center small">
+            @Options.LiveMatchViewModel.HomeTeamName
+            <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.HomeTeamLogo" />
+            @Options.LiveMatchViewModel.GoalsHomeTeam
+            -
+            @Options.LiveMatchViewModel.GoalsAwayTeam
+            <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.AwayTeamLogo" />@Options.LiveMatchViewModel.AwayTeamName
+        </p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public DisplayLiveMatchViewModelDisplayComponentOptions Options { get; set; }
+
+
+}
