@@ -15,10 +15,22 @@
     display: none;
 }
 
+.kt-pointer{
+    cursor: pointer;
+}
+
+a.kt-not-active {
+    color: #0a68ff;
+}
+
+a.kt-not-active:hover {
+    color: white;
+}
+
 .kt-api-container {
     border-top: solid 1px white;
     border-bottom: solid 1px white;
     margin: 15px 0px;
-    padding: 15px 0px;
+    padding: 15px 10px;
     background-color: #350084;
 }
