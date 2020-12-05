@@ -4,20 +4,19 @@
 }
 else
 {
-    <div class="text-center">
-        <p class="small text-center">Minutes Played: @Options.LiveMatchViewModel.Minute</p>
-        <p class="small text-center">Status: @Options.LiveMatchViewModel.MatchStatus</p>
-        <div>
-            <p>
-                @Options.LiveMatchViewModel.HomeTeamName
-                <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.HomeTeamLogo" />
-                @Options.LiveMatchViewModel.GoalsHomeTeam
-                -
-                @Options.LiveMatchViewModel.GoalsAwayTeam
-                <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.AwayTeamLogo" />@Options.LiveMatchViewModel.AwayTeamName
-            </p>
-        </div>
-    </div>
+<div class="text-center">
+    <p class="small text-center m-0">
+        Status: @Options.LiveMatchViewModel.MatchStatus | Time: @Options.LiveMatchViewModel.StartTime.ToString()
+    </p>
+    <p class="text-center small">
+        @Options.LiveMatchViewModel.HomeTeamName
+        <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.HomeTeamLogo" />
+        @Options.LiveMatchViewModel.GoalsHomeTeam
+        -
+        @Options.LiveMatchViewModel.GoalsAwayTeam
+        <img class="kt-teamlogo" src="@Options.LiveMatchViewModel.AwayTeamLogo" />@Options.LiveMatchViewModel.AwayTeamName
+    </p>
+</div>
 }
 
 @code {

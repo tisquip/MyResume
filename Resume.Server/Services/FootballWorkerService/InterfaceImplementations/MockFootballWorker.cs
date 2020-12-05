@@ -1,6 +1,7 @@
 ﻿using Resume.Domain;
 using Resume.Domain.Response;
 using Resume.Server.Services.FootballWorkerService.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,10 +87,6 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
             var liverpool = GetLiverpool();
             var manCity = GetManCity();
 
-            var footBallMatch1 = new FootBallMatch("2minFromNow", DateTime.UtcNow + TimeSpan.FromMinutes(2), arsernal.Name, arsernal.TeamId, arsernal.LogoUrl, liverpool.Name, liverpool.TeamId, liverpool.LogoUrl, "Emirates", "London");
-
-            var footballMatch2 = new FootBallMatch("7minFromNow", DateTime.UtcNow + TimeSpan.FromMinutes(7), manCity.Name, manCity.TeamId, manCity.LogoUrl, arsernal.Name, arsernal.TeamId, arsernal.LogoUrl, "Stadium of Light", "Manchester");
-
             List<FootBallMatch> footBallMatches = new List<FootBallMatch>();
 
             for (int i = 0; i < 100; i++)
@@ -107,6 +104,12 @@ namespace Resume.Server.Services.FootballWorkerService.InterfaceImplementations
             }
 
             Result<List<FootBallMatch>> vtr = new Result<List<FootBallMatch>>();
+
+            foreach (var footBallMatch in footBallMatches)
+            {
+                Log.Logger.Information($"Match: {footBallMatch.TimeOfMatch} | {footBallMatch.HomeTeamName} vs {footBallMatch.AwayTeamName}");
+            }
+
             vtr.SetSuccessObject(footBallMatches);
 
             return await Task.FromResult(vtr);

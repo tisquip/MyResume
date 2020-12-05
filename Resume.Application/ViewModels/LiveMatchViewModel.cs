@@ -1,4 +1,5 @@
 ﻿using Resume.Domain;
+using System;
 
 namespace Resume.Application.ViewModels
 {
@@ -15,12 +16,13 @@ namespace Resume.Application.ViewModels
         public int PenaltiesScoredAwayTeam { get; set; }
         public string MatchStatus { get; set; }
         public string Minute { get; set; }
+        public DateTime StartTime { get; set; }
 
         public LiveMatchViewModel()
         {
         }
 
-        public LiveMatchViewModel(string matchId, string homeTeamName, string homeTeamLogo, string awayTeamName, string awayTeamLogo, int goalsHomeTeam, int goalsAwayTeam, int penaltiesScoredHomeTeam, int penaltiesScoredAwayTeam, string matchStatus, string minute)
+        public LiveMatchViewModel(string matchId, string homeTeamName, string homeTeamLogo, string awayTeamName, string awayTeamLogo, int goalsHomeTeam, int goalsAwayTeam, int penaltiesScoredHomeTeam, int penaltiesScoredAwayTeam, string matchStatus, string minute, DateTime startTime)
         {
             MatchId = matchId;
             HomeTeamName = homeTeamName;
@@ -33,6 +35,7 @@ namespace Resume.Application.ViewModels
             PenaltiesScoredAwayTeam = penaltiesScoredAwayTeam;
             MatchStatus = matchStatus;
             Minute = minute;
+            StartTime = startTime;
         }
 
         public LiveMatchViewModel(FootBallMatch footBallMatch, LiveMatchStats liveMatchStats)
@@ -48,6 +51,7 @@ namespace Resume.Application.ViewModels
             Minute = liveMatchStats.Minute;
             PenaltiesScoredAwayTeam = liveMatchStats.PenaltiesScoredAwaySide;
             PenaltiesScoredHomeTeam = liveMatchStats.PenaltiesScoredHomeSide;
+            StartTime = footBallMatch.TimeOfMatch;
         }
 
         public LiveMatchViewModel(FootBallMatch footBallMatch)
@@ -56,6 +60,7 @@ namespace Resume.Application.ViewModels
             HomeTeamLogo = footBallMatch.HomeTeamLogoUrl;
             AwayTeamName = footBallMatch.AwayTeamName;
             HomeTeamName = footBallMatch.HomeTeamName;
+            StartTime = footBallMatch.TimeOfMatch;
 
             GoalsAwayTeam = footBallMatch.FullTimeMatchStats?.GoalsScoredAwaySide ?? 0;
             GoalsHomeTeam = footBallMatch.FullTimeMatchStats?.GoalsScoredHomeSide ?? 0;

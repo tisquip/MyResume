@@ -1,6 +1,7 @@
 ﻿@using Resume.Grpc
 @using Resume.Application.ViewModels
 @using Resume.Domain
+@using Resume.Web.Components.LiveMatchViewModelDisplay
 
 @implements IDisposable
 
@@ -10,22 +11,22 @@
         <LoaderComponent />
     </div>
 }
-
-@if (!previousGames?.Any() ?? true)
-{
-    <p class="small text-white">No Previous Games Played yet</p>
-}
 else
 {
-    foreach (var liveGameViewModel in previousGames)
+    if (nextMatch == null)
     {
-        <Resume.Web.Components.LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponent Options="new LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponentOptions(liveGameViewModel)" />
-        <hr class="text-white" />
+        <p class="small text-white">No Next Match Scheduled</p>
+    }
+    else
+    {
+        <LiveMatchViewModelDisplayComponent Options="new LiveMatchViewModelDisplay.LiveMatchViewModelDisplayComponentOptions(nextMatch)" />
     }
 }
 
+
+
 @code {
-    List<LiveMatchViewModel> previousGames = new List<LiveMatchViewModel>();
+    LiveMatchViewModel nextMatch;
     bool isLoading = true;
 
     SignalRService signalRService;
@@ -42,25 +43,35 @@ else
         base.OnAfterRender(firstRender);
         if (firstRender)
         {
-            _ = GetPreviousGames();
+            _ = GetNextGame();
         }
     }
 
-    async Task GetPreviousGames()
+    async Task GetNextGame()
     {
         isLoading = true;
         var gamesFromServer = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
         isLoading = false;
         if (gamesFromServer.Any())
         {
-            gamesFromServer = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.FullTime.ToString()).OrderByDescending(p => p.StartTime).ToList();
-            if (gamesFromServer.Any())
+            var gamesFromServerThatAreNotStarted = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.NotStarted.ToString()).OrderBy(p => p.StartTime).ToList();
+
+            if (gamesFromServerThatAreNotStarted.Any())
             {
-                for (int i = 0; i < gamesFromServer.Count; i++)
+                if (nextMatch == null)
                 {
-                    if (i == 2)
-                        break;
-                    previousGames.Add(gamesFromServer[i]);
+                    nextMatch = gamesFromServerThatAreNotStarted.FirstOrDefault();
+                }
+                else
+                {
+                    foreach (var gameFromServer in gamesFromServerThatAreNotStarted)
+                    {
+                        if (gameFromServer.MatchId != nextMatch.MatchId)
+                        {
+                            nextMatch = gameFromServer;
+                            break;
+                        }
+                    }
                 }
 
                 await InvokeAsync(StateHasChanged);
@@ -70,18 +81,14 @@ else
 
     async void OnLiveMatchViewModelRecieved(object sender, LiveMatchViewModel liveMatchViewModel)
     {
-        if (liveMatchViewModel.MatchStatus == Resume.Domain.MatchStatus.FullTime.ToString())
+        if (liveMatchViewModel?.MatchId == nextMatch?.MatchId)
         {
-            var liveMatchViewModelFromList = previousGames.FirstOrDefault(m => m.MatchId == liveMatchViewModel.MatchId);
-            if (liveMatchViewModelFromList != null)
+            await InvokeAsync(() =>
             {
-                await InvokeAsync(() =>
-                {
-                    isLoading = true;
-                    StateHasChanged();
-                });
-                await GetPreviousGames();
-            }
+                isLoading = true;
+                StateHasChanged();
+            });
+            await GetNextGame();
         }
     }
 

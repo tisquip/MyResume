@@ -29,6 +29,7 @@ message ProtoMessageLiveMatchViewModel{
 	int32 PenaltiesScoredAwayTeam = 9;
 	string MatchStatus = 10;
 	string Minute = 11;
+	string StartTime = 12;
 }
 
 message ProtoMessageResponseResultOfListOfLiveMatchViewModel{

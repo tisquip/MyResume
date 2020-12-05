@@ -25,7 +25,8 @@ namespace Resume.Application.ProtoAdapters
                 MatchStatus = liveMatchViewModel.MatchStatus,
                 Minute = liveMatchViewModel.Minute,
                 PenaltiesScoredAwayTeam = liveMatchViewModel.PenaltiesScoredAwayTeam,
-                PenaltiesScoredHomeTeam = liveMatchViewModel.PenaltiesScoredHomeTeam
+                PenaltiesScoredHomeTeam = liveMatchViewModel.PenaltiesScoredHomeTeam,
+                StartTime = liveMatchViewModel.StartTime.ToString()
             };
         }
 
@@ -33,6 +34,9 @@ namespace Resume.Application.ProtoAdapters
         {
             if (protoMessageLiveMatchViewModel == null)
                 return null;
+
+            DateTime startTime = default;
+            DateTime.TryParse(protoMessageLiveMatchViewModel.StartTime, out startTime);
 
             return new LiveMatchViewModel()
             {
@@ -46,7 +50,8 @@ namespace Resume.Application.ProtoAdapters
                 MatchStatus = protoMessageLiveMatchViewModel.MatchStatus,
                 Minute = protoMessageLiveMatchViewModel.Minute,
                 PenaltiesScoredAwayTeam = protoMessageLiveMatchViewModel.PenaltiesScoredAwayTeam,
-                PenaltiesScoredHomeTeam = protoMessageLiveMatchViewModel.PenaltiesScoredHomeTeam
+                PenaltiesScoredHomeTeam = protoMessageLiveMatchViewModel.PenaltiesScoredHomeTeam,
+                StartTime = startTime
             };
         }
     }

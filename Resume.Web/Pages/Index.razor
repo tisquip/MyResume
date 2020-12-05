@@ -1,22 +1,5 @@
 ﻿@page "/"
-<div class="row">
-    <div class="col-md-6">
-        <Resume.Web.Components.LiveMatchComponent />
-    </div>
-    <div class="col-md-6">
-        <div class="row">
-            <div class="col-md-6">
-                <Resume.Web.Components.PreviousMatchesComponent />
-            </div>
-            <div class="col-md-6">
 
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Header End -->
-<HeroComponent />
 <!-- Services Section Begin -->
 <section class="services spad">
     <div class="container">
@@ -42,7 +25,7 @@
                     <p>Worker Service (There is a worker service that is running background work on the server: its checking if there are any live Arsenal premier legue games and broadcasting those - a side note, .Net is awesome, thats what I can say)</p>
                     <p>Entity Framework Core 5 (im not using Many to Many though)</p>
                     <p>Xamarin Forms (next year will be definetly doing a MAUI thing if not Blazor Mobile Bindings) </p>
-
+                    <p>Bootstrap</p>
                     <div class="section-title">
                         <span>Some Patterns Used</span>
                         <h2>What I do?</h2>
@@ -68,6 +51,29 @@
             </div>
             <div class="col-lg-8">
                 <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h5 class="kt-games-title">Current Arsenal Live Match</h5>
+                                        <Resume.Web.Components.LiveMatchComponent />
+                                    </div>
+                                    <div class="col-md-12">
+                                        <h5 class="kt-games-title">Next Arsenal Live Match</h5>
+                                        <Resume.Web.Components.NextMatchComponent />
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <div class="col-md-6 kt-previousgames-div">
+                                <h5 class="kt-games-title">Last Two Arsenal Matches Played</h5>
+                                <Resume.Web.Components.PreviousMatchesComponent />
+                            </div>
+                        </div>
+
+                    </div>
                     <div class="col-lg-6 col-md-6 col-sm-6">
                         <div class="services__item">
                             <div class="services__item__icon">
