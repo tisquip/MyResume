@@ -1,118 +1,131 @@
 ﻿@page "/"
-
 <!-- Services Section Begin -->
 <section class="services spad">
     <div class="container">
         <div class="row">
-            <div class="col-lg-4">
-                <div class="services__title">
-                    <div class="section-title">
-                        <span>My services</span>
-                        <h2>What I do?</h2>
-                    </div>
-                    <p>Well, since its December now, I thought let me fire up my resume to look for other opportunities out there, and since im in development, what better way to do it than create a sample. The code for this is found on my github repo (including the full journey, via the commits), there at least you can see my coding style and the like</p>
-
-                    <div class="section-title">
-                        <span>Notable Technology Used in this site</span>
-                        <h2>What I do?</h2>
-                    </div>
-                    <p>.Net 5 Tech (yep, thats the other reason I did this site - test out the new bits)</p>
-                    <p>GRPC (This web app you are on, communicates with a server via GRPC-Web to fetch the previously played games)</p>
-                    <p>Blazor Web Assembly (Ohh yes, I had too:-) - for me, this is one of the biggest highlights of .Net 5, now waiting on MAUI. Anyhow, this app you are on, that is hosted on GitHub pages :-) is a Blazor Web Assembly app)</p>
-                    <p>SignalR - The live games are being broadcast via SignalR (I thought of using GRPC streaming, but never used it before then ontop of it, its GRPC-Web, so I know that has limitations on client streaming or is it bi-directional streaming limitation, be that as it may signalR is what is streaming the live scores if there is a live match - the scores are streamed every 30 seconds because I have limited calls on the api I am on)</p>
-                    <p>Git (Git was the version control, whilst I used GitHub for my repository needs)</p>
-                    <p>Sports Data Api (not necesarily a tech, but this is an example of an external api im using)</p>
-                    <p>Worker Service (There is a worker service that is running background work on the server: its checking if there are any live Arsenal premier legue games and broadcasting those - a side note, .Net is awesome, thats what I can say)</p>
-                    <p>Entity Framework Core 5 (im not using Many to Many though)</p>
-                    <p>Xamarin Forms (next year will be definetly doing a MAUI thing if not Blazor Mobile Bindings) </p>
-                    <p>Bootstrap</p>
-                    <div class="section-title">
-                        <span>Some Patterns Used</span>
-                        <h2>What I do?</h2>
-                    </div>
-                    <p>Well its not pure, trade offs always occur here and there, but its at least 70% domain driven design (Tradeoff's were made e.g. the Domain has an idea about persistance, but via an interfaces at least, the reson I did it especially when a domain mutates itself, I just want it to then update itself within the method that mutated itself as opposed to the application layer calling a method on the domain to mutate itself then having to call a method on the persistance layer)</p>
-                    <p>Publish Subscribe - via Mediatr (i.e. in the GRPC server implentation)</p>
-                    <p>Various other patterns including Singleton,Adapter and Inversion of Control</p>
-
-
-
-
-
-                    <div class="text-center px-3 pb-1">
-                        <img src="img/me.jpeg" class="img-fluid" />
-                    </div>
-                    <p class="text-center px-3">
-                        <i class="fa fa-phone"></i> : +263 779 741 403
-                        <br />
-                        <i class="fa fa-envelope"></i> : tisquip6@gmail.com
-                    </p>
-                    <a class="primary-btn text-white">Coding Concepts To Usable Technology</a>
-                </div>
+            <div class="col-md-4">
+                <Resume.Web.Components.CVDetailsComponents.ServiceSectionAboutSummaryComponent />
             </div>
-            <div class="col-lg-8">
+            <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-12">
+                        <ul class="nav nav-tabs mb-4">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link @classActiveApi" @onclick="() => ShowApi(true)">Show Api Project</a>
+                            </li>
+                            <li class="nav-item">
+                                <a  href="#"  class="nav-link @classActiveQualifications" @onclick="() => ShowApi(false)">Show Qualifications And Skills</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Show Api -->
+                    <div class="col-md-6 @classVisibilityApi">
                         <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="kt-games-title">Current Arsenal Live Match</h5>
+                                <Resume.Web.Components.LiveMatchComponent />
+                            </div>
+                            <div class="col-md-12">
+                                <h5 class="kt-games-title">Next Arsenal Live Match</h5>
+                                <Resume.Web.Components.NextMatchComponent />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 kt-previousgames-div @classVisibilityApi">
+                        <h5 class="kt-games-title">Last Two Arsenal Matches Played</h5>
+                        <Resume.Web.Components.PreviousMatchesComponent />
+                    </div>
+                    <div class="col-md-12 @classVisibilityApi">
+                        <p>
+                            This is an example project just to showcase some of what I know. You can click this video link to get a summary of what this small api project consists of, you can also view the source code in my repository (for those that want to assess code quality as well as travel through the git commits and the like): In a nutshell, this project uses the following technologies, patterns and architecture:
+                        </p>
+                        <p><strong>.Net 5 | Entity Framework Core 5 | Blazor WebAssembly | GRPC | SignalR | Background Worker | Domain Driven Design | Bootstrap</strong></p>
+                        <p>How it works: A background worker queries the Sport Data api and gets the Arsenal Team details including Arsenal's scheduled premier league matches. When Arsenal is playing a premier league game, the background worker queries the Sport Data Api every 30sec to get the live scores of the match, the background worker then broadcasts the live scores via SignalR to any client who would be listening, in this case, the Blazor Webassembly App will be a listening client and would receives these updates (including the Xamarin Forms App). Entity Framework Core 5 is used to save the results (including the schedule). The Blazor web application (the one you are on) queries the server for saved Arsenal games so that it can display previous games as well as the next upcoming game.It uses the GRPC protocol (i.e. GRPC-Web) to query the server.</p>
+                    </div>
+                    <!-- ./Show Api-->
+                    <!-- Show Qualifications -->
+                    <div class="col-md-6 @classVisibilityQualifications">
+                        <Resume.Web.Components.CVDetailsComponents.ServiceSectionSkillsSummaryComponent />
+                    </div>
+                    <div class="col-md-6 @classVisibilityQualifications">
+                        <Resume.Web.Components.CVDetailsComponents.ServiceSectionQualificationSummaryComponent />
+                    </div>
+                    <!-- ./Show Qualifications -->
 
-                            <div class="col-md-6">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <h5 class="kt-games-title">Current Arsenal Live Match</h5>
-                                        <Resume.Web.Components.LiveMatchComponent />
-                                    </div>
-                                    <div class="col-md-12">
-                                        <h5 class="kt-games-title">Next Arsenal Live Match</h5>
-                                        <Resume.Web.Components.NextMatchComponent />
-                                    </div>
-                                </div>
-                               
-                            </div>
-                            <div class="col-md-6 kt-previousgames-div">
-                                <h5 class="kt-games-title">Last Two Arsenal Matches Played</h5>
-                                <Resume.Web.Components.PreviousMatchesComponent />
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="services__item">
-                            <div class="services__item__icon">
-                                <img src="img/w001-web.png" alt="">
-                            </div>
-                            <h4>Websites</h4>
-                            <p>Whether its a plain and simple static site, or whether its an advanced site to build your new innovative concept, requiring a micro service architecture and all the bells and whistles</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="services__item">
-                            <div class="services__item__icon">
-                                <img src="img/w003-programming.png" alt="">
-                            </div>
-                            <h4>Custom Software</h4>
-                            <p>Using Microsoft's latest, .Net 5 (or .Net Core) and C#, let me build your new software that runs on all major desktop computer operating systems</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="services__item">
-                            <div class="services__item__icon">
-                                <img src="img/w005-mobile-app-1.png" alt="">
-                            </div>
-                            <h4>Mobile Apps</h4>
-                            <p>Everyone is using some sort of mobile app everyday, if your company doesn't have a mobile app, then there are loads of opportunities you company may be missing</p>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="services__item">
-                            <div class="services__item__icon">
-                                <img src="img/w006-technology.png" alt="">
-                            </div>
-                            <h4>Technology and Patterns used</h4>
-                            <p>C#, .Net 5 and Core, Blazor, Entity Framework, GRPC, SignalR, Domain Driven Design, CQRS, Event Sourcing, Micro services Architecture</p>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+
+            @*<div class="col-md-8">
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="img/w001-web.png" alt="">
+                                </div>
+                                <h4>Websites</h4>
+                                <p>Whether its a plain and simple static site, or whether its an advanced site to build your new innovative concept, requiring a micro service architecture and all the bells and whistles</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="img/w003-programming.png" alt="">
+                                </div>
+                                <h4>Custom Software</h4>
+                                <p>Using Microsoft's latest, .Net 5 (or .Net Core) and C#, let me build your new software that runs on all major desktop computer operating systems</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="img/w005-mobile-app-1.png" alt="">
+                                </div>
+                                <h4>Mobile Apps</h4>
+                                <p>Everyone is using some sort of mobile app everyday, if your company doesn't have a mobile app, then there are loads of opportunities you company may be missing</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="services__item">
+                                <div class="services__item__icon">
+                                    <img src="img/w006-technology.png" alt="">
+                                </div>
+                                <h4>Technology and Patterns used</h4>
+                                <p>C#, .Net 5 and Core, Blazor, Entity Framework, GRPC, SignalR, Domain Driven Design, CQRS, Event Sourcing, Micro services Architecture</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
         </div>
     </div>
 </section>
 <!-- Services Section End -->
+
+@code{
+    string classActiveApi = "active";
+    string classActiveQualifications = "";
+    string classVisibilityApi = "kt-visible";
+    string classVisibilityQualifications = "kt-hidden";
+
+    void ShowApi(bool showApi)
+    {
+        if (showApi)
+        {
+            classActiveApi = "active";
+            classActiveQualifications = "";
+
+            classVisibilityApi = "kt-visible";
+            classVisibilityQualifications = "kt-hidden";
+
+        }
+        else
+        {
+            classActiveApi = "";
+            classActiveQualifications = "active";
+
+            classVisibilityApi = "kt-hidden";
+            classVisibilityQualifications = "kt-visible";
+        }
+    }
+}
