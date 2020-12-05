@@ -11,7 +11,7 @@
                     <div class="col-md-12">
                         <ul class="nav nav-tabs mb-4">
                             <li class="nav-item">
-                                <a href="#" class="nav-link @classActiveApi" @onclick="() => ShowApi(true)">Show Api Project</a>
+                                <a href="#" class="nav-link @classActiveApi" @onclick="() => ShowApi(true)">Show Sample Api Project</a>
                             </li>
                             <li class="nav-item">
                                 <a  href="#"  class="nav-link @classActiveQualifications" @onclick="() => ShowApi(false)">Show Qualifications And Skills</a>
@@ -19,37 +19,55 @@
                         </ul>
                     </div>
                     <!-- Show Api -->
-                    <div class="col-md-6 @classVisibilityApi">
+                    <div class="col-md-12 @classVisibilityApi">
                         <div class="row">
                             <div class="col-md-12">
-                                <h5 class="kt-games-title">Current Arsenal Live Match</h5>
-                                <Resume.Web.Components.LiveMatchComponent />
+                                <p class="text-white small">This sample project uses the following technologies and partterns <strong>.Net 5 | Entity Framework Core 5 | Blazor WebAssembly | GRPC | SignalR | Background Worker | Domain Driven Design | Bootstrap | Calls an external api | Xamarin Forms</strong></p>
                             </div>
+                            <div class="col-md-12 kt-api-container">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h5 class="kt-games-title">Current Arsenal Live Match</h5>
+                                                <Resume.Web.Components.LiveMatchComponent />
+                                            </div>
+                                            <div class="col-md-12">
+                                                <h5 class="kt-games-title">Next Arsenal Live Match</h5>
+                                                <Resume.Web.Components.NextMatchComponent />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 kt-previousgames-div">
+                                        <h5 class="kt-games-title">Last Two Arsenal Matches Played</h5>
+                                        <Resume.Web.Components.PreviousMatchesComponent />
+                                    </div>
+                                </div>
+                            </div>
+                           
                             <div class="col-md-12">
-                                <h5 class="kt-games-title">Next Arsenal Live Match</h5>
-                                <Resume.Web.Components.NextMatchComponent />
+                                <p>
+                                    This is an example project just to showcase some of what I know. You can click this video link to get a summary of what this small api project consists of, you can also view the source code in my repository (for those that want to assess code quality as well as travel through the git commits and the like): In a nutshell, this project uses the following technologies, patterns and architecture:
+                                </p>
+                                <p>How it works: A background worker queries the Sport Data api and gets the Arsenal Team details including Arsenal's scheduled premier league matches. When Arsenal is playing a premier league game, the background worker queries the Sport Data Api every 30sec to get the live scores of the match, the background worker then broadcasts the live scores via SignalR to any client who would be listening, in this case, the Blazor Webassembly App will be a listening client and would receives these updates (including the Xamarin Forms App). Entity Framework Core 5 is used to save the results (including the schedule). The Blazor web application (the one you are on) queries the server for saved Arsenal games so that it can display previous games as well as the next upcoming game.It uses the GRPC protocol (i.e. GRPC-Web) to query the server.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 kt-previousgames-div @classVisibilityApi">
-                        <h5 class="kt-games-title">Last Two Arsenal Matches Played</h5>
-                        <Resume.Web.Components.PreviousMatchesComponent />
-                    </div>
-                    <div class="col-md-12 @classVisibilityApi">
-                        <p>
-                            This is an example project just to showcase some of what I know. You can click this video link to get a summary of what this small api project consists of, you can also view the source code in my repository (for those that want to assess code quality as well as travel through the git commits and the like): In a nutshell, this project uses the following technologies, patterns and architecture:
-                        </p>
-                        <p><strong>.Net 5 | Entity Framework Core 5 | Blazor WebAssembly | GRPC | SignalR | Background Worker | Domain Driven Design | Bootstrap</strong></p>
-                        <p>How it works: A background worker queries the Sport Data api and gets the Arsenal Team details including Arsenal's scheduled premier league matches. When Arsenal is playing a premier league game, the background worker queries the Sport Data Api every 30sec to get the live scores of the match, the background worker then broadcasts the live scores via SignalR to any client who would be listening, in this case, the Blazor Webassembly App will be a listening client and would receives these updates (including the Xamarin Forms App). Entity Framework Core 5 is used to save the results (including the schedule). The Blazor web application (the one you are on) queries the server for saved Arsenal games so that it can display previous games as well as the next upcoming game.It uses the GRPC protocol (i.e. GRPC-Web) to query the server.</p>
-                    </div>
+                   
+                    
                     <!-- ./Show Api-->
                     <!-- Show Qualifications -->
-                    <div class="col-md-6 @classVisibilityQualifications">
-                        <Resume.Web.Components.CVDetailsComponents.ServiceSectionSkillsSummaryComponent />
+                    <div class="col-md-12  @classVisibilityQualifications">
+                        <div class="row">
+                            <div class="col-md-6 @classVisibilityQualifications">
+                                <Resume.Web.Components.CVDetailsComponents.ServiceSectionSkillsSummaryComponent />
+                            </div>
+                            <div class="col-md-6 @classVisibilityQualifications">
+                                <Resume.Web.Components.CVDetailsComponents.ServiceSectionQualificationSummaryComponent />
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6 @classVisibilityQualifications">
-                        <Resume.Web.Components.CVDetailsComponents.ServiceSectionQualificationSummaryComponent />
-                    </div>
+                    
                     <!-- ./Show Qualifications -->
 
                 </div>

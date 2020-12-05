@@ -14,7 +14,7 @@ else
 {
     if (nextMatch == null)
     {
-        <p class="small text-white">No Next Match Scheduled</p>
+        <p class="small text-white"><em>No Next Match Scheduled</em></p>
     }
     else
     {
@@ -54,8 +54,10 @@ else
     async Task GetNextGame()
     {
         isLoading = true;
+        await InvokeAsync(StateHasChanged);
+
         var gamesFromServer = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
-        isLoading = false;
+
         if (gamesFromServer.Any())
         {
             var gamesFromServerThatAreNotStarted = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.NotStarted.ToString()).OrderBy(p => p.StartTime).ToList();
@@ -77,10 +79,10 @@ else
                         }
                     }
                 }
-
-                await InvokeAsync(StateHasChanged);
             }
         }
+        isLoading = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     async void OnLiveMatchViewModelRecieved(object sender, LiveMatchViewModel liveMatchViewModel)

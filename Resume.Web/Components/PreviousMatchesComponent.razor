@@ -13,7 +13,7 @@
 
 @if (!previousGames?.Any() ?? true)
 {
-    <p class="small text-white">No Previous Games Played yet</p>
+    <p class="small text-white"><em>No Previous Games Played yet</em></p>
 }
 else
 {
@@ -21,7 +21,7 @@ else
 
     for (int i = 0; i < previousGames.Count; i++)
     {
-<Resume.Web.Components.DisplayComponents.DisplayLiveMatchViewModelDisplayComponent Options="new DisplayComponents.DisplayLiveMatchViewModelDisplayComponentOptions(previousGames[i])" />
+        <Resume.Web.Components.DisplayComponents.DisplayLiveMatchViewModelDisplayComponent Options="new DisplayComponents.DisplayLiveMatchViewModelDisplayComponentOptions(previousGames[i])" />
         if (i != previousGames.Count - 1)
         {
             <hr style="background-color: white;color: white" />
@@ -54,8 +54,10 @@ else
     async Task GetPreviousGames()
     {
         isLoading = true;
+        await InvokeAsync(StateHasChanged);
+
         var gamesFromServer = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
-        isLoading = false;
+
         if (gamesFromServer.Any())
         {
             gamesFromServer = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.FullTime.ToString()).OrderByDescending(p => p.StartTime).ToList();
@@ -67,10 +69,11 @@ else
                         break;
                     previousGames.Add(gamesFromServer[i]);
                 }
-
-                await InvokeAsync(StateHasChanged);
             }
         }
+
+        isLoading = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     async void OnLiveMatchViewModelRecieved(object sender, LiveMatchViewModel liveMatchViewModel)
