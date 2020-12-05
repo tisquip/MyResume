@@ -85,11 +85,11 @@
         <DataTemplate>
             <FlexLayout
                 AlignItems="Center"
-                BackgroundColor="#1a7216"
+                BackgroundColor="#100028"
                 JustifyContent="Center"
                 MinimumHeightRequest="150">
-                <Label Text="tisquip6@gmail.com" />
-                <Label Text="Sample Project - Resume" />
+                <Label Text="tisquip6@gmail.com" TextColor="White" />
+                <Label Text="Sample Project - Resume" TextColor="White" />
             </FlexLayout>
         </DataTemplate>
     </Shell.FlyoutHeaderTemplate>
