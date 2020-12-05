@@ -1,19 +1,16 @@
-﻿using Resume.Mob.Services;
-using Resume.Mob.Views;
+﻿using Resume.Mob.Views;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace Resume.Mob
 {
-    public partial class App : Application
+    public partial class App : Xamarin.Forms.Application
     {
-
         public App()
         {
             InitializeComponent();
 
-            DependencyService.Register<MockDataStore>();
             MainPage = new AppShell();
         }
 
