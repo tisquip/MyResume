@@ -2,36 +2,15 @@
     <div class="text-center px-3 pb-1">
         <img src="img/me.jpeg" class="img-fluid" />
     </div>
-    <p class="text-center px-3">
-        <i class="fa fa-phone"></i> : +263 779 741 403
+    <p class="text-center px-3 small">
+        Name: Kudzanayi Takaendesa (or just Ronald)
         <br />
-        <i class="fa fa-envelope"></i> : tisquip6@gmail.com
+        Phone & WhatsApp: +263 775 862 473
+        <br />
+        Email: tisquip6@gmail.com
     </p>
-    <a class="primary-btn text-white">Coding Concepts To Usable Technology</a>
-    <p>- Happily Married (no children yet)</p>
-    <p>Aside from my wife and other family relations, I love .Net. Thats what I can say. Anyway, its December and I thought, let me fire up my cv and what better way to do it than using (you guessed it) .Net 5 :-). So basically, this app you are is using the following tech:</p>
 
-    <p>.Net 5 Tech (yep, thats the other reason I did this site - test out the new bits)</p>
-    <p>GRPC (This web app you are on, communicates with a server via GRPC-Web to fetch the previously played games)</p>
-    <p>Blazor Web Assembly (Ohh yes, I had too:-) - for me, this is one of the biggest highlights of .Net 5, now waiting on MAUI. Anyhow, this app you are on, that is hosted on GitHub pages :-) is a Blazor Web Assembly app)</p>
-    <p>SignalR - The live games are being broadcast via SignalR (I thought of using GRPC streaming, but never used it before then ontop of it, its GRPC-Web, so I know that has limitations on client streaming or is it bi-directional streaming limitation, be that as it may signalR is what is streaming the live scores if there is a live match - the scores are streamed every 30 seconds because I have limited calls on the api I am on)</p>
-    <p>Git (Git was the version control, whilst I used GitHub for my repository needs)</p>
-    <p>Sports Data Api (not necesarily a tech, but this is an example of an external api im using)</p>
-    <p>Worker Service (There is a worker service that is running background work on the server: its checking if there are any live Arsenal premier legue games and broadcasting those - a side note, .Net is awesome, thats what I can say)</p>
-    <p>Entity Framework Core 5 (im not using Many to Many though)</p>
-    <p>Xamarin Forms (next year will be definetly doing a MAUI thing if not Blazor Mobile Bindings) </p>
-    <p>Bootstrap</p>
-    <div class="section-title">
-        <span>Some Patterns Used</span>
-        <h2>What I do?</h2>
-    </div>
-    <p>Well its not pure, trade offs always occur here and there, but its at least 70% domain driven design (Tradeoff's were made e.g. the Domain has an idea about persistance, but via an interfaces at least, the reson I did it especially when a domain mutates itself, I just want it to then update itself within the method that mutated itself as opposed to the application layer calling a method on the domain to mutate itself then having to call a method on the persistance layer)</p>
-    <p>Publish Subscribe - via Mediatr (i.e. in the GRPC server implentation)</p>
-    <p>Various other patterns including Singleton,Adapter and Inversion of Control</p>
-
-
-
-
-
+    <p>Happily Married (no children yet). Aside from my wife and other family relations and friends, the other thing I love is .Net. Thats all I can say about me. Anyway, its December and I thought, let me fire up my CV and what better way to do it than using .Net 5 :-) (had fun i tell you). So basically, the app you are using is running on .Net 5 (dare I say, open your browser tools and viola : Blazor WebAssembly in production on GitHub pages using GRPC, SignalR and a Background Worker calling an external api, just to mention a few of tech used on this app). Anyhow, enjoy and you can <a href="https://github.com/tisquip/MyResume" target="_blank">view all the code as well as the all the commits in my repo.</a> So if you are interested, don't hesitate, get in touch (ps: I don't support Arsenal, my wife does)</p>
+    <a href="/vid.html" target="_blank" class="primary-btn text-white kt-pointer">Watch video to see how app works</a>
 
 </div>

@@ -1,4 +1,5 @@
 ﻿@page "/"
+
 <!-- Services Section Begin -->
 <section class="services spad">
     <div class="container">
@@ -21,8 +22,10 @@
                     <!-- Show Api -->
                     <div class="col-md-12 @classVisibilityApi">
                         <div class="row">
-                            <div class="col-md-12">
-                                <p class="text-white small">This sample project uses the following technologies and partterns <strong>.Net 5 | Entity Framework Core 5 | Blazor WebAssembly | GRPC | SignalR | Background Worker | Domain Driven Design | Bootstrap | Calls an external api | Xamarin Forms</strong></p>
+                            <div class="col-md-12 text-center">
+                                <a href="/vid.html" target="_blank" class="primary-btn text-white kt-pointer">Watch video to see how app works</a>
+
+                                <p class="text-white small">This sample project uses the following technologies and patterns <strong>.Net 5 | Entity Framework Core 5 | Blazor WebAssembly | GRPC | SignalR | Background Worker | Domain Driven Design | Bootstrap | Calls an external api | Xamarin Forms</strong></p>
                             </div>
                             <div class="col-md-12 kt-api-container">
                                 <div class="row">
@@ -47,7 +50,7 @@
                            
                             <div class="col-md-12">
                                 <p>
-                                    This is an example project just to showcase some of what I know. You can click this video link to get a summary of what this small api project consists of, you can also view the source code in my repository (for those that want to assess code quality as well as travel through the git commits and the like): In a nutshell, this project uses the following technologies, patterns and architecture:
+                                    This is an example project just to showcase some of what I know. You can click  <a href="/vid.html" target="_blank">this video link</a> to get a summary of what this small api project consists of, you can also view the source code in my repository (for those that want to assess code quality as well as travel through the git commits and the like): In a nutshell, this project uses the following technologies, patterns and architecture:
                                 </p>
                                 <p>How it works: A background worker queries the Sport Data api and gets the Arsenal Team details including Arsenal's scheduled premier league matches. When Arsenal is playing a premier league game, the background worker queries the Sport Data Api every 30sec to get the live scores of the match, the background worker then broadcasts the live scores via SignalR to any client who would be listening, in this case, the Blazor Webassembly App will be a listening client and would receives these updates (including the Xamarin Forms App). Entity Framework Core 5 is used to save the results (including the schedule). The Blazor web application (the one you are on) queries the server for saved Arsenal games so that it can display previous games as well as the next upcoming game.It uses the GRPC protocol (i.e. GRPC-Web) to query the server.</p>
                             </div>
@@ -146,4 +149,7 @@
             classVisibilityQualifications = "kt-visible";
         }
     }
+
+
+
 }
