@@ -5,7 +5,6 @@ using Resume.Grpc;
 using Resume.Grpc.Protos.Football;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
@@ -13,20 +12,25 @@ namespace Resume.Mob.Services
 {
     public static class InternetServices
     {
-        public static async Task<List<LiveMatchViewModel>> GetAllLiveMatches()
+        public static async Task<List<LiveMatchViewModel>> GetAllLiveMatches(Func<Task<bool>> internetServiceCheckAndAlertWhenNotAvailable)
         {
+            if (internetServiceCheckAndAlertWhenNotAvailable == null)
+                internetServiceCheckAndAlertWhenNotAvailable = () => Task.FromResult(true); //<-- It will then just throw the error via the try catch
+
             List<LiveMatchViewModel> vtr = new List<LiveMatchViewModel>();
             try
             {
-                ProtoMessageRequestMatches protoMessageRequestMatches = new ProtoMessageRequestMatches() { TeamId = Variables.ArsenalTeamId };
-                var resultProto = await GrpcClients.GrpcClientFootballMatch(SanitizeMobileUrlForEmulator(URLS.Server)).RequestMatchesForTeamAsync(protoMessageRequestMatches);
+                if (await internetServiceCheckAndAlertWhenNotAvailable())
+                {
+                    ProtoMessageRequestMatches protoMessageRequestMatches = new ProtoMessageRequestMatches() { TeamId = Variables.ArsenalTeamId };
+                    var resultProto = await GrpcClients.GrpcClientFootballMatch(SanitizeMobileUrlForEmulator(URLS.Server)).RequestMatchesForTeamAsync(protoMessageRequestMatches);
 
-                resultProto.ListOfLiveMatchViewModel.ForEach(lm => vtr.Add(ProtoMessageLiveMatchViewModel_LiveMatchViewModel_Adapter.Map(lm)));
+                    resultProto.ListOfLiveMatchViewModel.ForEach(lm => vtr.Add(ProtoMessageLiveMatchViewModel_LiveMatchViewModel_Adapter.Map(lm)));
+                }
             }
             catch (Exception ex)
             {
-                //LAZY: Should be caught by the caller
-                throw;
+                //TODO: LAZY: Should be caught by the caller
             }
             return vtr ?? new List<LiveMatchViewModel>();
         }

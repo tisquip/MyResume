@@ -1,4 +1,5 @@
-﻿using Resume.Mob.Views;
+﻿using Resume.Mob.Services;
+using Resume.Mob.Views;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -20,10 +21,12 @@ namespace Resume.Mob
 
         protected override void OnSleep()
         {
+            SignalRService.StopListeningToEndPoint();
         }
 
         protected override void OnResume()
         {
+            _ = SignalRService.Initialize();
         }
     }
 }

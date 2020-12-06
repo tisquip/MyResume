@@ -67,5 +67,24 @@ namespace Resume.Mob.ViewModels
             string errorMessage = displayRealError ? ex.Message : "An unxpected error occured";
             await DisplayAlert(new List<string>() { errorMessage });
         }
+
+        protected async Task SetIsLoading(bool isLoading)
+        {
+            await SetOnMainThread(() => IsLoading = isLoading);
+        }
+
+        protected async Task SetOnMainThread(Action action)
+        {
+            if (action == null) return;
+
+            await MainThread.InvokeOnMainThreadAsync(action);
+        }
+
+        protected async Task SetOnMainThread(Func<Task> func)
+        {
+            if (func == null) return;
+
+            await MainThread.InvokeOnMainThreadAsync(async () => await func());
+        }
     }
 }

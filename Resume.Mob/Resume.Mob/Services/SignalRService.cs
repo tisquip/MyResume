@@ -11,7 +11,7 @@ using Resume.Domain;
 
 namespace Resume.Mob.Services
 {
-    public class SignalRService 
+    public class SignalRService : IDisposable
     {
         #region Singleton
         static SignalRService _instance;
@@ -38,7 +38,6 @@ namespace Resume.Mob.Services
        
 
         HubConnection hubConnection;
-        bool isSubscribed = false;
         public event EventHandler<LiveMatchViewModel> LiveMatchViewModelRecieved;
         private SignalRService()
         {
@@ -76,19 +75,8 @@ namespace Resume.Mob.Services
             try
             {
                 await Connect();
-
-                if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
-                {
-                    if (!isSubscribed)
-                    {
-                        hubConnection.On<string>(Variables.SignalRMethodName_LiveMatch, async (jsLiveMatchViewModel) =>
-                        {
-                            ProcessLiveMatchViewModel(jsLiveMatchViewModel);
-                        });
-                        isSubscribed = true;
-                    }
-                    vtr.SetSuccess();
-                }
+                vtr = ListenToEndPoint();
+               
             }
             catch (Exception)
             {
@@ -98,6 +86,49 @@ namespace Resume.Mob.Services
             return vtr;
         }
 
+        public Result ListenToEndPoint()
+        {
+            Result vtr = new Result(true);
+            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
+            {
+                hubConnection.Remove(Variables.SignalRMethodName_LiveMatch);
+                hubConnection.On<string>(Variables.SignalRMethodName_LiveMatch, (jsLiveMatchViewModel) =>
+                {
+                    ProcessLiveMatchViewModel(jsLiveMatchViewModel);
+                });
+                vtr.SetSuccess();
+            }
+            return vtr;
+        }
+
+        public static async Task Initialize()
+        {
+            try
+            {
+                _ = await GetSignalRService();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public static void StopListeningToEndPoint()
+        {
+            if (_instance == null)
+                return;
+
+            _instance.StopListeningToEndPointPrivate();
+        }
+
+        void StopListeningToEndPointPrivate()
+        {
+            Result vtr = new Result(true);
+            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
+            {
+                hubConnection.Remove(Variables.SignalRMethodName_LiveMatch);
+            }
+        }
+
         private void ProcessLiveMatchViewModel(string jsLiveMatchViewModel)
         {
             LiveMatchViewModel liveMatchViewModel = jsLiveMatchViewModel?.DeserializeFromJson<LiveMatchViewModel>();
@@ -105,6 +136,14 @@ namespace Resume.Mob.Services
                 return;
 
             LiveMatchViewModelRecieved?.Invoke(this, liveMatchViewModel);
+        }
+
+        public void Dispose()
+        {
+            if (hubConnection != null)
+            {
+                _ = hubConnection.DisposeAsync();
+            }
         }
     }
 }
