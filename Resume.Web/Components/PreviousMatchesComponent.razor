@@ -56,20 +56,27 @@ else
         isLoading = true;
         await InvokeAsync(StateHasChanged);
 
-        var gamesFromServer = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
-
-        if (gamesFromServer.Any())
+        try
         {
-            gamesFromServer = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.FullTime.ToString()).OrderByDescending(p => p.StartTime).ToList();
+            var gamesFromServer = await GrpcClientServices.GetGames(Variables.ArsenalTeamId) ?? new List<LiveMatchViewModel>();
+
             if (gamesFromServer.Any())
             {
-                for (int i = 0; i < gamesFromServer.Count; i++)
+                gamesFromServer = gamesFromServer.Where(pg => pg.MatchStatus == MatchStatus.FullTime.ToString()).OrderByDescending(p => p.StartTime).ToList();
+                if (gamesFromServer.Any())
                 {
-                    if (i == 2)
-                        break;
-                    previousGames.Add(gamesFromServer[i]);
+                    for (int i = 0; i < gamesFromServer.Count; i++)
+                    {
+                        if (i == 2)
+                            break;
+                        previousGames.Add(gamesFromServer[i]);
+                    }
                 }
             }
+        }
+        catch (Exception)
+        {
+            //TODO: Implement
         }
 
         isLoading = false;
