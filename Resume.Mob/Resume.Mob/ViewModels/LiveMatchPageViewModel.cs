@@ -9,22 +9,63 @@ namespace Resume.Mob.ViewModels
     public class LiveMatchPageViewModel : ViewModelBase, IDisposable
     {
         SignalRService signalRService;
-        private bool noLiveMatchAvailable;
 
-        public bool NoLiveMatchAvailable
-        {
-            get { return noLiveMatchAvailable; }
-            set { noLiveMatchAvailable = value; OnPropertyChanged(); }
-        }
+        public bool NoLiveMatchAvailable { get; set; } = true;
+
+        public bool LiveMatchAvailable => !NoLiveMatchAvailable;
 
         private LiveMatchViewModel liveMatchViewModel;
-
         public LiveMatchViewModel LiveMatchViewModel
         {
             get { return liveMatchViewModel; }
-            set { liveMatchViewModel = value; OnPropertyChanged(); }
+            set
+            {
+                bool changeOtherProperties = liveMatchViewModel?.MatchId != value?.MatchId;
+
+                liveMatchViewModel = value; 
+                OnPropertyChanged();
+
+                if (changeOtherProperties)
+                {
+                    KickOffTime = liveMatchViewModel?.StartTime.ToString();
+
+                    HomeTeamLogo = liveMatchViewModel?.HomeTeamLogo;
+                    HomeTeamName = liveMatchViewModel?.HomeTeamName;
+
+                    AwayTeamLogo = liveMatchViewModel?.AwayTeamLogo;
+                    AwayTeamName = liveMatchViewModel?.AwayTeamName;
+
+                    OnPropertyChanged(nameof(KickOffTime));
+                    OnPropertyChanged(nameof(HomeTeamLogo));
+                    OnPropertyChanged(nameof(HomeTeamName));
+                    OnPropertyChanged(nameof(AwayTeamLogo));
+                    OnPropertyChanged(nameof(AwayTeamName));
+                }
+
+                if (NoLiveMatchAvailable && value != null)
+                {
+                    NoLiveMatchAvailable = false;
+                    SetOnPropertChangedForMatchAvailability();
+                }
+                else if (!NoLiveMatchAvailable && value == null)
+                {
+                    NoLiveMatchAvailable = true;
+                    SetOnPropertChangedForMatchAvailability();
+                }
+
+                void SetOnPropertChangedForMatchAvailability()
+                {
+                    OnPropertyChanged(nameof(NoLiveMatchAvailable));
+                    OnPropertyChanged(nameof(LiveMatchAvailable));
+                }
+            }
         }
 
+        public string HomeTeamName { get; set; }
+        public string HomeTeamLogo { get; set; }
+        public string AwayTeamName { get; set; }
+        public string AwayTeamLogo { get; set; }
+        public string KickOffTime { get; set; }
         public LiveMatchPageViewModel(Func<List<string>, Task> displayAlert) : base(displayAlert)
         {
             _ = SetSignalRService();

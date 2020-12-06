@@ -3,14 +3,75 @@
     x:Class="Resume.Mob.Views.AllMatchesPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pv="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
     xmlns:views="clr-namespace:Resume.Mob.Views"
-    Title="All Matches">
+    Title="All Matches"
+    BackgroundImageSource="background">
     <views:ContentPageBase.Content>
-        <StackLayout>
-            <Label
-                HorizontalOptions="CenterAndExpand"
-                Text="All Matches"
-                VerticalOptions="CenterAndExpand" />
-        </StackLayout>
+        <Grid>
+            <CollectionView ItemsSource="{Binding LiveMatchViewModels}" SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout HorizontalOptions="FillAndExpand">
+
+                            <pv:PancakeView
+                                Margin="10"
+                                Padding="10"
+                                BackgroundColor="White"
+                                CornerRadius="8">
+                                <StackLayout>
+                                    <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                                        <Label Text="Status: " />
+                                        <Label Text="{Binding MatchStatus}" />
+                                    </StackLayout>
+
+                                    <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal">
+                                        <!--  Team  -->
+                                        <StackLayout>
+                                            <Image
+                                                HeightRequest="50"
+                                                HorizontalOptions="Center"
+                                                Source="{Binding HomeTeamLogo}" />
+                                            <Label HorizontalTextAlignment="Center" Text="{Binding HomeTeamName}" />
+                                        </StackLayout>
+                                        <!--  ./Team  -->
+                                        <Label Text="{Binding GoalsHomeTeam}" VerticalTextAlignment="Center" />
+                                        <Label Text=" - " VerticalTextAlignment="Center" />
+                                        <Label Text="{Binding GoalsAwayTeam}" VerticalTextAlignment="Center" />
+                                        <!--  Team  -->
+                                        <StackLayout>
+                                            <Image
+                                                HeightRequest="50"
+                                                HorizontalOptions="Center"
+                                                Source="{Binding AwayTeamLogo}" />
+                                            <Label HorizontalTextAlignment="Center" Text="{Binding AwayTeamName}" />
+                                        </StackLayout>
+                                        <!--  ./Team  -->
+                                    </StackLayout>
+
+                                    <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal">
+                                        <Label Text="Time : " />
+                                        <Label Text="{Binding StartTime}" />
+                                    </StackLayout>
+                                </StackLayout>
+
+                            </pv:PancakeView>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <StackLayout
+                BackgroundColor="#AA100028"
+                HorizontalOptions="FillAndExpand"
+                IsVisible="{Binding IsLoading}"
+                VerticalOptions="FillAndExpand">
+                <ActivityIndicator
+                    HorizontalOptions="Center"
+                    IsRunning="{Binding IsLoading}"
+                    IsVisible="{Binding IsLoading}"
+                    VerticalOptions="Center" />
+            </StackLayout>
+        </Grid>
     </views:ContentPageBase.Content>
 </views:ContentPageBase>

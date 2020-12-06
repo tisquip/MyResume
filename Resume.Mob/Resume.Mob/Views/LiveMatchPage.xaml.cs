@@ -18,6 +18,7 @@ namespace Resume.Mob.Views
         {
             InitializeComponent();
             ViewModel = new LiveMatchPageViewModel(DisplayNotice);
+            BindingContext = ViewModel;
         }
     }
 }

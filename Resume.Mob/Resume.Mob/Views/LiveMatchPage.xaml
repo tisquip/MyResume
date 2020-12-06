@@ -8,55 +8,75 @@
     Title="Live Match"
     BackgroundImageSource="background">
     <views:ContentPageBase.Content>
-        <StackLayout Spacing="0">
+        <StackLayout>
             <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
-            <pv:PancakeView
-                Margin="0,15,0,0"
-                Padding="15,5"
-                BackgroundColor="White"
-                CornerRadius="8,8,0,0"
-                HorizontalOptions="Center">
-                <StackLayout>
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="Medium"
-                        HorizontalTextAlignment="Center"
-                        Text="Time: 33min" />
+            <StackLayout IsVisible="{Binding LiveMatchAvailable}" Spacing="0">
+                <pv:PancakeView
+                    Margin="0,15,0,0"
+                    Padding="15,5"
+                    BackgroundColor="White"
+                    CornerRadius="8,8,0,0"
+                    HorizontalOptions="Center">
+                    <StackLayout Orientation="Horizontal">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="Medium"
+                            HorizontalTextAlignment="Center"
+                            Text="Game Time:" />
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="Medium"
+                            HorizontalTextAlignment="Center"
+                            Text="{Binding LiveMatchViewModel.Minute}" />
+                    </StackLayout>
 
-                </StackLayout>
+                </pv:PancakeView>
+                <pv:PancakeView
+                    Padding="15,5"
+                    BackgroundColor="White"
+                    CornerRadius="8"
+                    HorizontalOptions="Center">
+                    <StackLayout HorizontalOptions="Center">
+                        <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                            <!--  Team  -->
+                            <StackLayout Orientation="Horizontal">
+                                <Label
+                                    FontAttributes="Bold"
+                                    Text="{Binding HomeTeamName}"
+                                    VerticalTextAlignment="Center" />
+                                <Image HeightRequest="40" Source="{Binding HomeTeamLogo}" />
+                            </StackLayout>
+                            <Label Text="{Binding LiveMatchViewModel.GoalsHomeTeam}" VerticalTextAlignment="Center" />
+                            <Label Text="-" VerticalTextAlignment="Center" />
+                            <Label Text="{Binding LiveMatchViewModel.GoalsAwayTeam}" VerticalTextAlignment="Center" />
+                            <!--  Team  -->
+                            <StackLayout Orientation="Horizontal">
+                                <Image HeightRequest="40" Source="{Binding AwayTeamLogo}" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    Text="{Binding AwayTeamName}"
+                                    VerticalTextAlignment="Center" />
 
-            </pv:PancakeView>
-            <pv:PancakeView
-                Padding="15,5"
-                BackgroundColor="White"
-                CornerRadius="8"
-                HorizontalOptions="Center">
-                <StackLayout HorizontalOptions="Center">
-                    <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
-                        <!--  Team  -->
-                        <StackLayout Orientation="Horizontal">
-                            <Label
-                                FontAttributes="Bold"
-                                Text="Arsenal"
-                                VerticalTextAlignment="Center" />
-                            <Image HeightRequest="40" Source="football" />
+                            </StackLayout>
                         </StackLayout>
-                        <Label Text="5" VerticalTextAlignment="Center" />
-                        <Label Text="-" VerticalTextAlignment="Center" />
-                        <Label Text="4" VerticalTextAlignment="Center" />
-                        <!--  Team  -->
                         <StackLayout Orientation="Horizontal">
-                            <Image HeightRequest="40" Source="football" />
-                            <Label
-                                FontAttributes="Bold"
-                                Text="Arsenal"
-                                VerticalTextAlignment="Center" />
-
+                            <Label HorizontalTextAlignment="Center" Text="Status:" />
+                            <Label HorizontalTextAlignment="Center" Text="{Binding LiveMatchViewModel.MatchStatus}" />
+                        </StackLayout>
+                        <StackLayout Orientation="Horizontal">
+                            <Label HorizontalTextAlignment="Center" Text="Kick off time:" />
+                            <Label HorizontalTextAlignment="Center" Text="{Binding KickOffTime}" />
                         </StackLayout>
                     </StackLayout>
-                    <Label HorizontalTextAlignment="Center" Text="Status: Playing" />
-                </StackLayout>
 
+                </pv:PancakeView>
+            </StackLayout>
+            <pv:PancakeView
+                Margin="15"
+                Padding="15"
+                BackgroundColor="White"
+                IsVisible="{Binding NoLiveMatchAvailable}">
+                <Label HorizontalTextAlignment="Center" Text="No Live Match Available currently" />
             </pv:PancakeView>
         </StackLayout>
     </views:ContentPageBase.Content>

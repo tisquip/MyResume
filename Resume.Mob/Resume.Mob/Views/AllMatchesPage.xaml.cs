@@ -18,7 +18,16 @@ namespace Resume.Mob.Views
         {
             InitializeComponent();
             ViewModel = new AllMatchesPageViewModel(DisplayNotice);
+            BindingContext = ViewModel;
         }
 
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (ViewModel != null)
+            {
+                _ = ViewModel.GetAllMatches();
+            }
+        }
     }
 }

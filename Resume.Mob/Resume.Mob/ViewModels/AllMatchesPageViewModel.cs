@@ -1,10 +1,10 @@
 ﻿using Resume.Application.ViewModels;
+using Resume.Mob.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
-using Xamarin.Essentials;
 
 namespace Resume.Mob.ViewModels
 {
@@ -12,32 +12,35 @@ namespace Resume.Mob.ViewModels
     {
         public ObservableCollection<LiveMatchViewModel> LiveMatchViewModels { get; set; } = new ObservableCollection<LiveMatchViewModel>();
         public AllMatchesPageViewModel(Func<List<string>, Task> displayAlert) : base(displayAlert)
-        {
+        { 
         }
 
-        async Task GetAllMatches()
+        public async Task GetAllMatches()
         {
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            if (!IsLoading)
             {
-                IsLoading = true;
-            });
-
-            if (await HasInternet())
-            {
+                await SetIsLoading(true);
                 try
                 {
-
+                    List<LiveMatchViewModel> liveMatchViewModels = await InternetServices.GetAllLiveMatches(DisplayAlert);
+                    if (liveMatchViewModels?.Any() ?? false)
+                    {
+                        liveMatchViewModels = liveMatchViewModels.OrderBy(lm => lm.StartTime).ToList();
+                        await SetOnMainThread(() =>
+                        {
+                            LiveMatchViewModels.Clear();
+                            liveMatchViewModels.ForEach(lm => LiveMatchViewModels.Add(lm));
+                        });
+                    }
                 }
                 catch (Exception ex)
                 {
                     await LogError(ex);
                 }
-            }
 
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                IsLoading = false;
-            });
+                await SetIsLoading(false);
+            }
+           
         }
     }
 }

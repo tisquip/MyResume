@@ -6,21 +6,22 @@ using Resume.Grpc.Protos.Football;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
 using Xamarin.Forms.Internals;
 
 namespace Resume.Mob.Services
 {
     public static class InternetServices
     {
-        public static async Task<List<LiveMatchViewModel>> GetAllLiveMatches(Func<Task<bool>> internetServiceCheckAndAlertWhenNotAvailable)
+        public static async Task<List<LiveMatchViewModel>> GetAllLiveMatches(Func<List<string>, Task> displayNotice)
         {
-            if (internetServiceCheckAndAlertWhenNotAvailable == null)
-                internetServiceCheckAndAlertWhenNotAvailable = () => Task.FromResult(true); //<-- It will then just throw the error via the try catch
+            if (displayNotice == null)
+                displayNotice = (n) => Task.CompletedTask; 
 
             List<LiveMatchViewModel> vtr = new List<LiveMatchViewModel>();
             try
             {
-                if (await internetServiceCheckAndAlertWhenNotAvailable())
+                if (await HasInternet(displayNotice))
                 {
                     ProtoMessageRequestMatches protoMessageRequestMatches = new ProtoMessageRequestMatches() { TeamId = Variables.ArsenalTeamId };
                     var resultProto = await GrpcClients.GrpcClientFootballMatch(SanitizeMobileUrlForEmulator(URLS.Server)).RequestMatchesForTeamAsync(protoMessageRequestMatches);
@@ -28,9 +29,9 @@ namespace Resume.Mob.Services
                     resultProto.ListOfLiveMatchViewModel.ForEach(lm => vtr.Add(ProtoMessageLiveMatchViewModel_LiveMatchViewModel_Adapter.Map(lm)));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                //TODO: LAZY: Should be caught by the caller
+                await displayNotice(new List<string>() { "Unknown error occured" });
             }
             return vtr ?? new List<LiveMatchViewModel>();
         }
@@ -40,9 +41,19 @@ namespace Resume.Mob.Services
             string vtr = url;
             if (vtr.Contains("localhost"))
             {
-                vtr = vtr.Replace("localhost", "10.0.0.1");
+                vtr = vtr.Replace("localhost", "10.0.2.2");
             }
             return vtr;
+        }
+
+        public static async Task<bool> HasInternet(Func<List<string>, Task> displayNotice)
+        {
+            bool hasInternet = Connectivity.NetworkAccess == NetworkAccess.Internet;
+            if (!hasInternet && displayNotice != null)
+            {
+                await displayNotice(new List<string>() { "An internet connection is required for some of the services to function properly" });
+            }
+            return hasInternet;
         }
     }
 }

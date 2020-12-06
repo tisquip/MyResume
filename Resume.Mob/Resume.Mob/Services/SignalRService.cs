@@ -4,7 +4,6 @@ using Resume.Application.ViewModels;
 using Resume.Domain.Response;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Resume.Domain;
@@ -15,7 +14,7 @@ namespace Resume.Mob.Services
     {
         #region Singleton
         static SignalRService _instance;
-        static object _lock;
+        static object _lock = new object();
         public static async Task<SignalRService> GetSignalRService()
         {
             if (_instance == null)
@@ -46,7 +45,7 @@ namespace Resume.Mob.Services
         {
             try
             {
-                if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+                if (await InternetServices.HasInternet((list) => Task.CompletedTask))
                 {
                     if (hubConnection == null)
                     {
@@ -89,7 +88,7 @@ namespace Resume.Mob.Services
         public Result ListenToEndPoint()
         {
             Result vtr = new Result(true);
-            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected)
+            if (hubConnection != null && hubConnection.State == HubConnectionState.Connected && Connectivity.NetworkAccess == NetworkAccess.Internet)
             {
                 hubConnection.Remove(Variables.SignalRMethodName_LiveMatch);
                 hubConnection.On<string>(Variables.SignalRMethodName_LiveMatch, (jsLiveMatchViewModel) =>

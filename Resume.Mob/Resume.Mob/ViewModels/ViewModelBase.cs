@@ -51,15 +51,7 @@ namespace Resume.Mob.ViewModels
             }
         }
 
-        protected async Task<bool> HasInternet(bool displayNoInternetNotice = true)
-        {
-            bool hasInternet = Connectivity.NetworkAccess == NetworkAccess.Internet;
-            if (!hasInternet && displayNoInternetNotice)
-            {
-                await DisplayAlert(new List<string>(){ "An internet connection is required for some of the services to function properly" });
-            }
-            return hasInternet;
-        }
+      
 
         protected async Task LogError(Exception ex, bool displayRealError = false)
         {
