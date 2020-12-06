@@ -5,6 +5,6 @@ namespace Resume.Server.Services.EmailServices
 {
     public interface IEmailService
     {
-        Task<Result> Send(string emailAddress, string emailBody);
+        Task<Result> Send(string emailAddress, string emailSubject, string emailBody);
     }
 }

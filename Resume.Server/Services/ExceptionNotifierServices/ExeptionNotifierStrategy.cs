@@ -14,7 +14,7 @@ namespace Resume.Server.Services.ExceptionNotifierServices
             Log.Logger.Error("{@exception}", ex);
             try
             {
-                await emailService.Send(adminEmailAddress, $"An exception has occured on your Resume Project. {ex.Message} : {ex.SerializeToJson()}");
+                await emailService.Send(adminEmailAddress, "An exception has occured on your Resume Project", $"{ex.Message} : {ex.SerializeToJson()}");
             }
             catch (Exception sendEx)
             {
