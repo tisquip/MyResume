@@ -113,10 +113,10 @@
         </DataTemplate>
     </Shell.FlyoutHeaderTemplate>
 
-    <FlyoutItem Title="Live Match" Icon="scoreboard.png">
+    <FlyoutItem Title="Live Match" Icon="football.png">
         <ShellContent ContentTemplate="{DataTemplate local:LiveMatchPage}" Route="LiveMatchPage" />
     </FlyoutItem>
-    <FlyoutItem Title="All Matches" Icon="strategy.png">
+    <FlyoutItem Title="All Matches" Icon="soccer_shoe.png">
         <ShellContent ContentTemplate="{DataTemplate local:AllMatchesPage}" Route="AllMatchesPage" />
     </FlyoutItem>
 

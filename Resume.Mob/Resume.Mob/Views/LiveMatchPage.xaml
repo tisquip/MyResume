@@ -78,6 +78,19 @@
                 IsVisible="{Binding NoLiveMatchAvailable}">
                 <Label HorizontalTextAlignment="Center" Text="No Live Match Available currently" />
             </pv:PancakeView>
+            <pv:PancakeView
+                Margin="0,0,0,10"
+                Padding="15"
+                BackgroundColor="DarkSlateGray"
+                VerticalOptions="EndAndExpand">
+                <pv:PancakeView.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CommandOpenWebGoToMainProject}" />
+                </pv:PancakeView.GestureRecognizers>
+                <Label
+                    FontSize="Micro"
+                    Text="Developed by tisquip6@gmail.com as part of a broader concept to highlight skills in .Net 5 (i.e. Blazor, GRPC, Entity Framework Core, Xamarin Forms, Background worker and Integration with an external api) and Common design patterns and architectures (i.e. Domain Driven Design, Test Driven Design, Singleton pattern, Adapter pattern and more. Click to go to main site"
+                    TextColor="white" />
+            </pv:PancakeView>
         </StackLayout>
     </views:ContentPageBase.Content>
 </views:ContentPageBase>

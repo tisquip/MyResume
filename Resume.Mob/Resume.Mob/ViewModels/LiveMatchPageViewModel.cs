@@ -1,8 +1,12 @@
-﻿using Resume.Application.ViewModels;
+﻿using Resume.Application;
+using Resume.Application.ViewModels;
 using Resume.Mob.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace Resume.Mob.ViewModels
 {
@@ -66,17 +70,41 @@ namespace Resume.Mob.ViewModels
         public string AwayTeamName { get; set; }
         public string AwayTeamLogo { get; set; }
         public string KickOffTime { get; set; }
+
+        public ICommand CommandOpenWebGoToMainProject { get; set; }
         public LiveMatchPageViewModel(Func<List<string>, Task> displayAlert) : base(displayAlert)
         {
+            CommandOpenWebGoToMainProject = new Command(async () => await OpenWebGoToMainProject());
             _ = SetSignalRService();
+        }
+
+        async Task OpenWebGoToMainProject()
+        {
+            try
+            {
+                await Browser.OpenAsync(URLS.WebApp, BrowserLaunchMode.External);
+            }
+            catch (Exception)
+            {
+                //TODO: Implement
+            }
+
         }
 
         async Task SetSignalRService()
         {
             await SetIsLoading(true);
-            signalRService = await SignalRService.GetSignalRService();
-            signalRService.LiveMatchViewModelRecieved -= OnLiveViewMatchRecieved;
-            signalRService.LiveMatchViewModelRecieved += OnLiveViewMatchRecieved;
+            try
+            {
+                signalRService = await SignalRService.GetSignalRService();
+                signalRService.LiveMatchViewModelRecieved -= OnLiveViewMatchRecieved;
+                signalRService.LiveMatchViewModelRecieved += OnLiveViewMatchRecieved;
+            }
+            catch (Exception)
+            {
+                //TODO: Implement
+            }
+           
             await SetIsLoading(false);
         }
 
