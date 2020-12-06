@@ -4,6 +4,7 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Resume.Mob.Views"
+    xmlns:pv="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
     Title="Sample Resume Proj">
 
     <!--
@@ -83,21 +84,39 @@
 
     <Shell.FlyoutHeaderTemplate>
         <DataTemplate>
-            <FlexLayout
-                AlignItems="Center"
-                BackgroundColor="#100028"
-                JustifyContent="Center"
-                MinimumHeightRequest="150">
-                <Label Text="tisquip6@gmail.com" TextColor="White" />
-                <Label Text="Sample Project - Resume" TextColor="White" />
-            </FlexLayout>
+            <Grid>
+                <Image Aspect="AspectFill" Source="coding" />
+                <FlexLayout
+                    AlignItems="Center"
+                    Direction="Column"
+                    JustifyContent="Center">
+
+                    <pv:PancakeView
+                        Padding="10"
+                        BackgroundColor="#AA100028"
+                        CornerRadius="8">
+                        <StackLayout>
+                            <Label
+                                HorizontalTextAlignment="Center"
+                                Text="tisquip6@gmail.com"
+                                TextColor="White" />
+                            <Label
+                                HorizontalTextAlignment="Center"
+                                Text="Sample Project - Resume"
+                                TextColor="White" />
+                        </StackLayout>
+                    </pv:PancakeView>
+
+                </FlexLayout>
+            </Grid>
+
         </DataTemplate>
     </Shell.FlyoutHeaderTemplate>
 
-    <FlyoutItem Title="Live Match" Icon="icon_about.png">
+    <FlyoutItem Title="Live Match" Icon="scoreboard.png">
         <ShellContent ContentTemplate="{DataTemplate local:LiveMatchPage}" Route="LiveMatchPage" />
     </FlyoutItem>
-    <FlyoutItem Title="All Matches" Icon="icon_feed.png">
+    <FlyoutItem Title="All Matches" Icon="strategy.png">
         <ShellContent ContentTemplate="{DataTemplate local:AllMatchesPage}" Route="AllMatchesPage" />
     </FlyoutItem>
 

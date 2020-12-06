@@ -2,13 +2,61 @@
 <ContentPage
     x:Class="Resume.Mob.Views.LiveMatchPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pv="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+    Title="Live Match"
+    BackgroundImageSource="background">
     <ContentPage.Content>
-        <StackLayout>
-            <Label
-                HorizontalOptions="CenterAndExpand"
-                Text="Live Match"
-                VerticalOptions="CenterAndExpand" />
+        <StackLayout Spacing="0">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" />
+            <pv:PancakeView
+                Margin="0,15,0,0"
+                Padding="15,5"
+                BackgroundColor="White"
+                CornerRadius="8,8,0,0"
+                HorizontalOptions="Center">
+                <StackLayout>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="Medium"
+                        HorizontalTextAlignment="Center"
+                        Text="Time: 33min" />
+
+                </StackLayout>
+
+            </pv:PancakeView>
+            <pv:PancakeView
+                Padding="15,5"
+                BackgroundColor="White"
+                CornerRadius="8"
+                HorizontalOptions="Center">
+                <StackLayout HorizontalOptions="Center">
+                    <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                        <!--  Team  -->
+                        <StackLayout Orientation="Horizontal">
+                            <Label
+                                FontAttributes="Bold"
+                                Text="Arsenal"
+                                VerticalTextAlignment="Center" />
+                            <Image HeightRequest="40" Source="football" />
+                        </StackLayout>
+                        <Label Text="5" VerticalTextAlignment="Center" />
+                        <Label Text="-" VerticalTextAlignment="Center" />
+                        <Label Text="4" VerticalTextAlignment="Center" />
+                        <!--  Team  -->
+                        <StackLayout Orientation="Horizontal">
+                            <Image HeightRequest="40" Source="football" />
+                            <Label
+                                FontAttributes="Bold"
+                                Text="Arsenal"
+                                VerticalTextAlignment="Center" />
+
+                        </StackLayout>
+                    </StackLayout>
+                    <Label HorizontalTextAlignment="Center" Text="Status: Playing" />
+                </StackLayout>
+
+            </pv:PancakeView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

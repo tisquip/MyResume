@@ -31,7 +31,7 @@ namespace Resume.Mob.Services
             return vtr ?? new List<LiveMatchViewModel>();
         }
 
-        static string SanitizeMobileUrlForEmulator(string url)
+        public static string SanitizeMobileUrlForEmulator(string url)
         {
             string vtr = url;
             if (vtr.Contains("localhost"))
